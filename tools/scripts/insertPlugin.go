@@ -8,11 +8,11 @@ import (
 	"log"
 )
 
-const path = "./wasmer/myGuest.wasm"
+const path = "./wazero/myGuest.wasm"
 
 var (
 	wasmName = "test"
-	runtime  = "wasmer"
+	runtime  = "wazero"
 
 	filterName               = "wasm"
 	desc                     = "wasm test"

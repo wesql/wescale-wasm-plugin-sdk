@@ -17,11 +17,29 @@ func main() {}
 func wazeroGuestFunc(ptr, size uint32) (ptrSize uint64) {
 	dataFromHost := ptrToString(ptr, size)
 
-	w := tools.WasmPluginExchange{}
+	w := tools.WasmPluginRunBeforeExecutionExchange{}
 	// todo, how to handle errors?
 	json.Unmarshal([]byte(dataFromHost), &w)
 
 	wescale_wasm_plugin_template.RunBeforeExecution(&w)
+
+	// todo, how to handle errors?
+	dataToHost, _ := json.Marshal(&w)
+	dataToHostString := string(dataToHost)
+
+	ptr, size = stringToLeakedPtr(dataToHostString)
+	return (uint64(ptr) << uint64(32)) | uint64(size)
+}
+
+//export wazeroGuestFuncAfterExecution
+func wazeroGuestFuncAfterExecution(ptr, size uint32) (ptrSize uint64) {
+	dataFromHost := ptrToString(ptr, size)
+
+	w := tools.WasmPluginRunAfterExecutionExchange{}
+	// todo, how to handle errors?
+	json.Unmarshal([]byte(dataFromHost), &w)
+
+	wescale_wasm_plugin_template.RunAfterExecution(&w)
 
 	// todo, how to handle errors?
 	dataToHost, _ := json.Marshal(&w)

@@ -57,7 +57,7 @@ func wasmerGuestFunc() {
 	// todo, how to return err?
 	var err error
 
-	e := tools.WasmPluginExchange{}
+	e := tools.WasmPluginRunBeforeExecutionExchange{}
 	//fmt.Printf("guest bytesbuffer len: %d buffer: %v\n", len(bytesBuffer), bytesBuffer)
 	err = json.Unmarshal(bytesBuffer, &e)
 	if err != nil {

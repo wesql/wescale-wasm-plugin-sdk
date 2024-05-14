@@ -1,7 +1,6 @@
 package wescale_wasm_plugin_template
 
 import (
-	"context"
 	"fmt"
 	"golang.org/x/sync/semaphore"
 	"wescale-wasm-plugin-template/tools"
@@ -19,22 +18,22 @@ func init() {
 
 func RunBeforeExecution(exchange *tools.WasmPluginRunBeforeExecutionExchange) {
 	// TODO: Write your code here
-	sem.Acquire(context.Background(), 1)
+	//sem.Acquire(context.Background(), 1)
 	//time.Sleep(3 * time.Second)
-	//count++
+	count++
 	//if count%2 == 1 {
 	//	exchange.Query = "select * from d11.t11"
 	//} else {
 	//	exchange.Query = "select * from d22.t22"
 	//}
-	exchange.Query = "select * from d1.t1"
+	exchange.Query = fmt.Sprintf("select * from d%d.t1", count)
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {
 	// TODO: Write your code here
-	sem.Release(1)
+	//sem.Release(1)
 	//count--
-	fmt.Printf("in wasm after: %v", exchange)
+	//log.Printf("in wasm after: %v", exchange)
 	exchange.Query = "select * from d3.t3"
-	fmt.Printf("in wasm after: %v", exchange)
+	//log.Printf("in wasm after: %v", exchange)
 }

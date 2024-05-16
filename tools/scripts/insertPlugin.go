@@ -50,6 +50,7 @@ func main() {
 	}
 	fmt.Println("database connected")
 
+	// todo newborn22 5.14 blob or base64?
 	binary := fmt.Sprintf("%v", wasmBytes)
 	binary = binary[1 : len(binary)-1]
 	insertWasmTemplate := `insert ignore into mysql.wasm_binary(name,runtime,data) values ('%s','%s','%s');`

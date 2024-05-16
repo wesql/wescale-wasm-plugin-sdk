@@ -18,7 +18,7 @@ func main() {
 				panic(err.Error())
 			}
 			defer db.Close()
-			for j := 0; j < 100; j++ {
+			for j := 0; j < 1000; j++ {
 				db.Query("select * from d1.t1")
 				//fmt.Println("1")
 			}

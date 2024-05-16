@@ -47,3 +47,9 @@ func wazeroGuestFuncAfterExecution(ptr, size uint32) (ptrSize uint64) {
 	ptr, size = tools.StringToLeakedPtr(dataToHostString)
 	return (uint64(ptr) << uint64(32)) | uint64(size)
 }
+
+//export proxy_on_memory_allocate
+func proxyOnMemoryAllocate(size uint) *byte {
+	buf := make([]byte, size)
+	return &buf[0]
+}

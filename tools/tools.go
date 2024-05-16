@@ -1,5 +1,6 @@
 package tools
 
+// #include <stdlib.h>
 import "C"
 import "unsafe"
 

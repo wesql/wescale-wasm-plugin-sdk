@@ -38,6 +38,8 @@ func RunBeforeExecution(exchange *tools.WasmPluginRunBeforeExecutionExchange) {
 	//}
 	//exchange.Query = fmt.Sprintf("select * from d%d.t1", globalCount)
 	exchange.Query = str
+
+	hostfunction.SetHostQuery("select * from guest.setquerytest;")
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {

@@ -99,28 +99,6 @@ func main() {
 		action,
 		actionArgs)
 
-	//	createFilterTemplate := ` INSERT IGNORE INTO mysql.wescale_plugin (name, description, priority, status, plans, fully_qualified_table_names, query_regex, query_template, request_ip_regex, user_regex, leading_comment_regex, trailing_comment_regex, bind_var_conds, action, action_args)
-	//VALUES ('%s', '%s', %d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s','%s');`
-	//
-	//	actionArgs := fmt.Sprintf("%v", wasmBytes)
-	//	actionArgs = actionArgs[1 : len(actionArgs)-1]
-	//	query := fmt.Sprintf(createFilterTemplate,
-	//		filterName,
-	//		desc,
-	//		999,
-	//		status,
-	//		plans,
-	//		fullyQualifiedTableNames,
-	//		queryRegex,
-	//		queryTemplate,
-	//		requestIpRegex,
-	//		userRegex,
-	//		leadingCommentRegex,
-	//		trailingCommentRegex,
-	//		bindVarConds,
-	//		action,
-	//		actionArgs)
-	//
 	_, err = db.Query(query)
 	if err != nil {
 		panic(err.Error())

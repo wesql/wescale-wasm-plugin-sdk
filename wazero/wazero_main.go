@@ -7,27 +7,18 @@ import (
 	"encoding/json"
 	wescale_wasm_plugin_template "wescale-wasm-plugin-template"
 	"wescale-wasm-plugin-template/tools"
+	hostfunction "wescale-wasm-plugin-template/tools/host_functions"
 )
 
 // main is required for TinyGo to compile to Wasm.
 func main() {}
 
-//export wazeroGuestFunc
-func wazeroGuestFunc(ptr, size uint32, hostInstancePtr uint64) (ptrSize uint64) {
-	dataFromHost := tools.PtrToString(ptr, size)
+//export WazeroGuestFuncBeforeExecution
+func WazeroGuestFuncBeforeExecution(hostInstancePtr uint64) {
+	hostfunction.HostInstancePtr = hostInstancePtr
 
-	w := tools.WasmPluginRunBeforeExecutionExchange{}
-	// todo, how to handle errors?
-	json.Unmarshal([]byte(dataFromHost), &w)
+	wescale_wasm_plugin_template.RunBeforeExecution()
 
-	wescale_wasm_plugin_template.RunBeforeExecution(&w, hostInstancePtr)
-
-	// todo, how to handle errors?
-	dataToHost, _ := json.Marshal(&w)
-	dataToHostString := string(dataToHost)
-
-	ptr, size = tools.StringToLeakedPtr(dataToHostString)
-	return (uint64(ptr) << uint64(32)) | uint64(size)
 }
 
 //export wazeroGuestFuncAfterExecution

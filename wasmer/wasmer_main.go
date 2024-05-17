@@ -64,7 +64,7 @@ func wasmerGuestFunc() {
 		fmt.Println(err)
 	}
 
-	wescale_wasm_plugin_template.RunBeforeExecution(&e, 0)
+	wescale_wasm_plugin_template.RunBeforeExecution(&e)
 
 	bytesBuffer, err = json.Marshal(e)
 	if err != nil {

@@ -9,7 +9,7 @@ func GetValueByKeyHost(key uint32) uint32
 func SetValueByKeyHost(key, value uint32)
 
 //export GetQueryHost
-func GetQueryHost(returnValueData *uint32, returnValueSize *uint32) tools.Status
+func GetQueryHost(hostInstancePtr uint64, returnValueData *uint32, returnValueSize *uint32) tools.Status
 
 //export SetQueryHost
-func SetQueryHost(queryValuePtr uint32, queryValueSize uint32, hostInstancePtr uint64) tools.Status
+func SetQueryHost(hostInstancePtr uint64, queryValuePtr uint32, queryValueSize uint32) tools.Status

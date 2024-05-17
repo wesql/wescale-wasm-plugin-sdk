@@ -15,7 +15,7 @@ func GetHostQuery() (string, error) {
 	return tools.PtrToString(ptr, retSize), nil
 }
 
-func SetHostQuery(query string) error {
+func SetHostQuery(query string, hostInstancePtr uint64) error {
 	ptr, size := tools.StringToLeakedPtr(query)
-	return tools.StatusToError(SetQueryHost(ptr, size))
+	return tools.StatusToError(SetQueryHost(ptr, size, hostInstancePtr))
 }

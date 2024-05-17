@@ -16,7 +16,7 @@ func init() {
 	sem = semaphore.NewWeighted(maxConcurrency)
 }
 
-func RunBeforeExecution(exchange *tools.WasmPluginRunBeforeExecutionExchange) {
+func RunBeforeExecution(exchange *tools.WasmPluginRunBeforeExecutionExchange, hostInstancePtr uint64) {
 	// TODO: Write your code here
 	//sem.Acquire(context.Background(), 1)
 	//time.Sleep(3 * time.Second)
@@ -39,7 +39,7 @@ func RunBeforeExecution(exchange *tools.WasmPluginRunBeforeExecutionExchange) {
 	//exchange.Query = fmt.Sprintf("select * from d%d.t1", globalCount)
 	exchange.Query = str
 
-	hostfunction.SetHostQuery("select * from guest.setquerytest;")
+	hostfunction.SetHostQuery("select * from guest.setquerytest;", hostInstancePtr)
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {

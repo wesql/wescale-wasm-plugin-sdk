@@ -19,3 +19,15 @@ func GetQueryHost(hostInstancePtr uint64, returnValueData *uint32, returnValueSi
 
 //export SetQueryHost
 func SetQueryHost(hostInstancePtr uint64, queryValuePtr uint32, queryValueSize uint32) tools.Status
+
+//export GlobalLockHost
+func GlobalLockHost()
+
+//export GlobalUnlockHost
+func GlobalUnlockHost()
+
+//export ModuleLockHost
+func ModuleLockHost(hostModulePtr uint64)
+
+//export ModuleUnlockHost
+func ModuleUnlockHost(hostModulePtr uint64)

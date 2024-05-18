@@ -9,7 +9,7 @@ import (
 
 func RunBeforeExecution() {
 	// TODO: Write your code here
-
+	hostfunction.GlobalLock()
 	var moduleCount int
 	countBytes, err := hostfunction.GetModuleValueByKey("moduleCount")
 	if errors.Is(err, tools.ErrorStatusNotFound) {
@@ -29,6 +29,7 @@ func RunBeforeExecution() {
 	}
 
 	hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
+	hostfunction.GlobalUnlock()
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {

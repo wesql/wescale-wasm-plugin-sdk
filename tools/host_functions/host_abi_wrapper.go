@@ -58,3 +58,19 @@ func SetHostQuery(query string) error {
 	ptr, size := tools.StringToLeakedPtr(query)
 	return tools.StatusToError(SetQueryHost(HostInstancePtr, ptr, size))
 }
+
+func GlobalLock() {
+	GlobalLockHost()
+}
+
+func GlobalUnlock() {
+	GlobalUnlockHost()
+}
+
+func ModuleLock() {
+	ModuleLockHost(HostModulePtr)
+}
+
+func ModuleUnlock() {
+	ModuleUnlockHost(HostModulePtr)
+}

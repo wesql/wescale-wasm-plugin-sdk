@@ -10,25 +10,25 @@ import (
 func RunBeforeExecution() {
 	// TODO: Write your code here
 
-	var globalCount int
-	countBytes, err := hostfunction.GetGlobalValueByKey("globalCount")
+	var moduleCount int
+	countBytes, err := hostfunction.GetModuleValueByKey("moduleCount")
 	if errors.Is(err, tools.ErrorStatusNotFound) {
-		globalCount = 0
-		hostfunction.SetGlobalValueByKey("globalCount", []byte(strconv.Itoa(globalCount)))
+		moduleCount = 0
+		hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	}
 
-	countBytes, _ = hostfunction.GetGlobalValueByKey("globalCount")
-	globalCount, _ = strconv.Atoi(string(countBytes))
-	globalCount++
+	countBytes, _ = hostfunction.GetModuleValueByKey("moduleCount")
+	moduleCount, _ = strconv.Atoi(string(countBytes))
+	moduleCount++
 
-	if globalCount%2 == 0 {
+	if moduleCount%2 == 0 {
 		hostfunction.SetHostQuery("select * from guest.setquerytest;")
 	} else {
 		str, _ := hostfunction.GetHostQuery()
 		hostfunction.SetHostQuery(str)
 	}
 
-	hostfunction.SetGlobalValueByKey("globalCount", []byte(strconv.Itoa(globalCount)))
+	hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {

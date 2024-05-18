@@ -1,6 +1,8 @@
 package wescale_wasm_plugin_template
 
 import (
+	"errors"
+	"strconv"
 	"wescale-wasm-plugin-template/tools"
 	hostfunction "wescale-wasm-plugin-template/tools/host_functions"
 )
@@ -8,9 +10,16 @@ import (
 func RunBeforeExecution() {
 	// TODO: Write your code here
 
-	globalCount := hostfunction.GetValueByKeyHost(1)
+	var globalCount int
+	countBytes, err := hostfunction.GetGlobalValueByKey("globalCount")
+	if errors.Is(err, tools.ErrorStatusNotFound) {
+		globalCount = 0
+		hostfunction.SetGlobalValueByKey("globalCount", []byte(strconv.Itoa(globalCount)))
+	}
+
+	countBytes, _ = hostfunction.GetGlobalValueByKey("globalCount")
+	globalCount, _ = strconv.Atoi(string(countBytes))
 	globalCount++
-	hostfunction.SetValueByKeyHost(1, globalCount)
 
 	if globalCount%2 == 0 {
 		hostfunction.SetHostQuery("select * from guest.setquerytest;")
@@ -18,6 +27,8 @@ func RunBeforeExecution() {
 		str, _ := hostfunction.GetHostQuery()
 		hostfunction.SetHostQuery(str)
 	}
+
+	hostfunction.SetGlobalValueByKey("globalCount", []byte(strconv.Itoa(globalCount)))
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {

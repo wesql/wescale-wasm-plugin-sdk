@@ -5,6 +5,33 @@ import (
 )
 
 var HostInstancePtr uint64
+var HostModulePtr uint64
+
+func GetGlobalValueByKey(key string) ([]byte, error) {
+	keyPtr, keySize := tools.StringToLeakedPtr(key)
+	var ptr uint32
+	var retSize uint32
+
+	err := tools.StatusToError(GetGlobalValueByKeyHost(keyPtr, keySize, &ptr, &retSize))
+	if err != nil {
+		return nil, err
+	}
+	return tools.PtrToBytes(ptr, retSize), nil
+}
+
+func SetGlobalValueByKey(key string, value []byte) error {
+	keyPtr, keySize := tools.StringToLeakedPtr(key)
+	bytesPtr, bytesLen := tools.BytesToLeakedPtr(value)
+	return tools.StatusToError(SetGlobalValueByKeyHost(keyPtr, keySize, bytesPtr, bytesLen))
+}
+
+func GetModuleValueByKey(key uint32) uint32 {
+	return GetModuleValueByKeyHost(HostModulePtr, key)
+}
+
+func SetModuleValueByKey(key, value uint32) {
+	SetModuleValueByKeyHost(HostModulePtr, key, value)
+}
 
 func GetHostQuery() (string, error) {
 	var ptr uint32

@@ -14,8 +14,9 @@ import (
 func main() {}
 
 //export WazeroGuestFuncBeforeExecution
-func WazeroGuestFuncBeforeExecution(hostInstancePtr uint64) {
+func WazeroGuestFuncBeforeExecution(hostInstancePtr, hostModulePtr uint64) {
 	hostfunction.HostInstancePtr = hostInstancePtr
+	hostfunction.HostModulePtr = hostModulePtr
 
 	wescale_wasm_plugin_template.RunBeforeExecution()
 

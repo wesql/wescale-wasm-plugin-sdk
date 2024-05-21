@@ -19,7 +19,7 @@ func WazeroGuestFuncBeforeExecution(hostInstancePtr, hostModulePtr uint64) {
 	hostfunction.HostModulePtr = hostModulePtr
 
 	wescale_wasm_plugin_template.RunBeforeExecution()
-
+	
 }
 
 //export wazeroGuestFuncAfterExecution
@@ -36,7 +36,7 @@ func wazeroGuestFuncAfterExecution(ptr, size uint32) (ptrSize uint64) {
 	dataToHost, _ := json.Marshal(&w)
 	dataToHostString := string(dataToHost)
 
-	ptr, size = tools.StringToLeakedPtr(dataToHostString)
+	ptr, size = tools.StringToPtr(dataToHostString)
 	return (uint64(ptr) << uint64(32)) | uint64(size)
 }
 

@@ -2,32 +2,44 @@ package hostfunction
 
 import "wescale-wasm-plugin-template/tools"
 
-//export GetGlobalValueByKeyHost
-func GetGlobalValueByKeyHost(keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) tools.Status
+//export GetGlobalValueByKeyOnHost
+func GetGlobalValueByKeyOnHost(keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) tools.Status
 
-//export SetGlobalValueByKeyHost
-func SetGlobalValueByKeyHost(keyPtr, keySize, valuePtr, valueSize uint32) tools.Status
+//export SetGlobalValueByKeyOnHost
+func SetGlobalValueByKeyOnHost(keyPtr, keySize, valuePtr, valueSize uint32) tools.Status
 
-//export GetModuleValueByKeyHost
-func GetModuleValueByKeyHost(hostModulePtr uint64, keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) tools.Status
+//export GetModuleValueByKeyOnHost
+func GetModuleValueByKeyOnHost(hostModulePtr uint64, keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) tools.Status
 
-//export SetModuleValueByKeyHost
-func SetModuleValueByKeyHost(hostModulePtr uint64, keyPtr, keySize, valuePtr, valueSize uint32) tools.Status
+//export SetModuleValueByKeyOnHost
+func SetModuleValueByKeyOnHost(hostModulePtr uint64, keyPtr, keySize, valuePtr, valueSize uint32) tools.Status
 
-//export GetQueryHost
-func GetQueryHost(hostInstancePtr uint64, returnValueData *uint32, returnValueSize *uint32) tools.Status
+//export GetQueryOnHost
+func GetQueryOnHost(hostInstancePtr uint64, returnValueData *uint32, returnValueSize *uint32) tools.Status
 
-//export SetQueryHost
-func SetQueryHost(hostInstancePtr uint64, queryValuePtr uint32, queryValueSize uint32) tools.Status
+//export SetQueryOnHost
+func SetQueryOnHost(hostInstancePtr uint64, queryValuePtr uint32, queryValueSize uint32) tools.Status
 
-//export GlobalLockHost
-func GlobalLockHost()
+//export GlobalLockOnHost
+func GlobalLockOnHost()
 
-//export GlobalUnlockHost
-func GlobalUnlockHost()
+//export GlobalUnlockOnHost
+func GlobalUnlockOnHost()
 
-//export ModuleLockHost
-func ModuleLockHost(hostModulePtr uint64)
+//export ModuleLockOnHost
+func ModuleLockOnHost(hostModulePtr uint64)
 
-//export ModuleUnlockHost
-func ModuleUnlockHost(hostModulePtr uint64)
+//export ModuleUnlockOnHost
+func ModuleUnlockOnHost(hostModulePtr uint64)
+
+//export GetAbiVersionOnHost
+func GetAbiVersionOnHost(returnValuePtr *uint32, returnValueSize *uint32) tools.Status
+
+//export GetRuntimeTypeOnHost
+func GetRuntimeTypeOnHost(returnValuePtr *uint32, returnValueSize *uint32) tools.Status
+
+//export InfoLogOnHost
+func InfoLogOnHost(ptr uint32, size uint32) tools.Status
+
+//export ErrorLogOnHost
+func ErrorLogOnHost(ptr uint32, size uint32) tools.Status

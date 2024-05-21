@@ -1,6 +1,7 @@
 package hostfunction
 
 import (
+	"errors"
 	"wescale-wasm-plugin-template/tools"
 )
 
@@ -8,11 +9,14 @@ var HostInstancePtr uint64
 var HostModulePtr uint64
 
 func GetGlobalValueByKey(key string) ([]byte, error) {
-	keyPtr, keySize := tools.StringToLeakedPtr(key)
+	if len(key) == 0 {
+		return nil, errors.New("key is empty")
+	}
+	keyPtr, keySize := tools.StringToPtr(key)
 	var ptr uint32
 	var retSize uint32
 
-	err := tools.StatusToError(GetGlobalValueByKeyHost(keyPtr, keySize, &ptr, &retSize))
+	err := tools.StatusToError(GetGlobalValueByKeyOnHost(keyPtr, keySize, &ptr, &retSize))
 	if err != nil {
 		return nil, err
 	}
@@ -20,17 +24,26 @@ func GetGlobalValueByKey(key string) ([]byte, error) {
 }
 
 func SetGlobalValueByKey(key string, value []byte) error {
-	keyPtr, keySize := tools.StringToLeakedPtr(key)
-	bytesPtr, bytesLen := tools.BytesToLeakedPtr(value)
-	return tools.StatusToError(SetGlobalValueByKeyHost(keyPtr, keySize, bytesPtr, bytesLen))
+	if len(key) == 0 {
+		return errors.New("key is empty")
+	}
+	if len(value) == 0 {
+		return errors.New("value is empty")
+	}
+	keyPtr, keySize := tools.StringToPtr(key)
+	bytesPtr, bytesLen := tools.BytesToPtr(value)
+	return tools.StatusToError(SetGlobalValueByKeyOnHost(keyPtr, keySize, bytesPtr, bytesLen))
 }
 
 func GetModuleValueByKey(key string) ([]byte, error) {
-	keyPtr, keySize := tools.StringToLeakedPtr(key)
+	if len(key) == 0 {
+		return nil, errors.New("key is empty")
+	}
+	keyPtr, keySize := tools.StringToPtr(key)
 	var ptr uint32
 	var retSize uint32
 
-	err := tools.StatusToError(GetModuleValueByKeyHost(HostModulePtr, keyPtr, keySize, &ptr, &retSize))
+	err := tools.StatusToError(GetModuleValueByKeyOnHost(HostModulePtr, keyPtr, keySize, &ptr, &retSize))
 	if err != nil {
 		return nil, err
 	}
@@ -38,16 +51,22 @@ func GetModuleValueByKey(key string) ([]byte, error) {
 }
 
 func SetModuleValueByKey(key string, value []byte) error {
-	keyPtr, keySize := tools.StringToLeakedPtr(key)
-	bytesPtr, bytesLen := tools.BytesToLeakedPtr(value)
-	return tools.StatusToError(SetModuleValueByKeyHost(HostModulePtr, keyPtr, keySize, bytesPtr, bytesLen))
+	if len(key) == 0 {
+		return errors.New("key is empty")
+	}
+	if len(value) == 0 {
+		return errors.New("value is empty")
+	}
+	keyPtr, keySize := tools.StringToPtr(key)
+	bytesPtr, bytesLen := tools.BytesToPtr(value)
+	return tools.StatusToError(SetModuleValueByKeyOnHost(HostModulePtr, keyPtr, keySize, bytesPtr, bytesLen))
 }
 
 func GetHostQuery() (string, error) {
 	var ptr uint32
 	var retSize uint32
 
-	err := tools.StatusToError(GetQueryHost(HostInstancePtr, &ptr, &retSize))
+	err := tools.StatusToError(GetQueryOnHost(HostInstancePtr, &ptr, &retSize))
 	if err != nil {
 		return "", err
 	}
@@ -55,22 +74,63 @@ func GetHostQuery() (string, error) {
 }
 
 func SetHostQuery(query string) error {
-	ptr, size := tools.StringToLeakedPtr(query)
-	return tools.StatusToError(SetQueryHost(HostInstancePtr, ptr, size))
+	if len(query) == 0 {
+		return errors.New("query is empty")
+	}
+	ptr, size := tools.StringToPtr(query)
+	return tools.StatusToError(SetQueryOnHost(HostInstancePtr, ptr, size))
 }
 
 func GlobalLock() {
-	GlobalLockHost()
+	GlobalLockOnHost()
 }
 
 func GlobalUnlock() {
-	GlobalUnlockHost()
+	GlobalUnlockOnHost()
 }
 
 func ModuleLock() {
-	ModuleLockHost(HostModulePtr)
+	ModuleLockOnHost(HostModulePtr)
 }
 
 func ModuleUnlock() {
-	ModuleUnlockHost(HostModulePtr)
+	ModuleUnlockOnHost(HostModulePtr)
+}
+
+func GetAbiVersion() (string, error) {
+	var ptr uint32
+	var retSize uint32
+
+	err := tools.StatusToError(GetAbiVersionOnHost(&ptr, &retSize))
+	if err != nil {
+		return "", err
+	}
+	return tools.PtrToString(ptr, retSize), nil
+}
+
+func GetRuntimeType() (string, error) {
+	var ptr uint32
+	var retSize uint32
+
+	err := tools.StatusToError(GetRuntimeTypeOnHost(&ptr, &retSize))
+	if err != nil {
+		return "", err
+	}
+	return tools.PtrToString(ptr, retSize), nil
+}
+
+func InfoLog(message string) {
+	if len(message) == 0 {
+		return
+	}
+	ptr, size := tools.StringToPtr(message)
+	InfoLogOnHost(ptr, size)
+}
+
+func ErrorLog(message string) {
+	if len(message) == 0 {
+		return
+	}
+	ptr, size := tools.StringToPtr(message)
+	ErrorLogOnHost(ptr, size)
 }

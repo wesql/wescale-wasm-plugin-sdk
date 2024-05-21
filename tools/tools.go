@@ -27,19 +27,12 @@ func PtrToBytes(ptr uint32, size uint32) []byte {
 	return unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 }
 
-// stringToLeakedPtr returns a pointer and size pair for the given string in a way
-// compatible with WebAssembly numeric types.
-// The pointer is not automatically managed by TinyGo hence it must be freed by the host.
-func StringToLeakedPtr(s string) (uint32, uint32) {
-	size := C.ulong(len(s))
-	ptr := unsafe.Pointer(C.malloc(size))
-	copy(unsafe.Slice((*byte)(ptr), size), s)
-	return uint32(uintptr(ptr)), uint32(size)
+func StringToPtr(s string) (uint32, uint32) {
+	ptr := unsafe.Pointer(unsafe.StringData(s))
+	return uint32(uintptr(ptr)), uint32(len(s))
 }
 
-func BytesToLeakedPtr(b []byte) (uint32, uint32) {
-	size := C.ulong(len(b))
-	ptr := unsafe.Pointer(C.malloc(size))
-	copy(unsafe.Slice((*byte)(ptr), size), b)
-	return uint32(uintptr(ptr)), uint32(size)
+func BytesToPtr(bytes []byte) (uint32, uint32) {
+	ptr := unsafe.Pointer(&bytes[0])
+	return uint32(uintptr(ptr)), uint32(len(bytes))
 }

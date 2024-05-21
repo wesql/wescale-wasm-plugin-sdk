@@ -2,6 +2,7 @@ package wescale_wasm_plugin_template
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"wescale-wasm-plugin-template/tools"
 	hostfunction "wescale-wasm-plugin-template/tools/host_functions"
@@ -28,8 +29,18 @@ func RunBeforeExecution() {
 		hostfunction.SetHostQuery(str)
 	}
 
+	runtimeType, _ := hostfunction.GetRuntimeType()
+	version, _ := hostfunction.GetAbiVersion()
+	if runtimeType != "" {
+		if version != "" {
+
+		}
+	}
+	hostfunction.InfoLog(fmt.Sprintf("wasm guest runtime type:%v version:%v", runtimeType, version))
+
 	hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	hostfunction.GlobalUnlock()
+
 }
 
 func RunAfterExecution(exchange *tools.WasmPluginRunAfterExecutionExchange) {

@@ -2,7 +2,7 @@
 
 build-scripts:
 	mkdir -p bin
-	go build -o ./bin/wescale_wasm ./tools/scripts/wescale_wasm.go
+	go build -o ./bin/wescale_wasm ./tools/wescale_wasm/main.go
 
 build-wazero:
 	mkdir -p bin

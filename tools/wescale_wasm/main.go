@@ -8,7 +8,6 @@ import (
 	"github.com/dsnet/compress/bzip2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/pflag"
-	"io"
 	"io/ioutil"
 	"log"
 	"vitess.io/vitess/go/sqltypes"
@@ -16,10 +15,11 @@ import (
 )
 
 var (
-	command  = "install"
-	wasmFile = "./bin/myguest.wasm"
-	wasmName = "test"
-	runtime  = "wazero"
+	command           = "install"
+	wasmFile          = "./bin/myguest.wasm"
+	wasmName          = "test"
+	runtime           = "wazero"
+	compressAlgorithm = "bzip2"
 
 	filterName               = "wasm"
 	desc                     = "wasm test"
@@ -52,15 +52,6 @@ func CompressByBZip2(originalData []byte) []byte {
 	return buf.Bytes()
 }
 
-func UnCompress(compressedData []byte) ([]byte, error) {
-	r, err := bzip2.NewReader(bytes.NewReader(compressedData), nil)
-	decompressedData, err := io.ReadAll(r)
-	if err != nil {
-		return nil, err
-	}
-	return decompressedData, nil
-}
-
 func init() {
 	pflag.StringVar(&command, "command", command, "the command of the script. default is install")
 	pflag.StringVar(&wasmFile, "wasm_file", wasmFile, "the wasmFile of wasm file")
@@ -76,6 +67,11 @@ func main() {
 	}
 }
 
+func calcMd5String32(data []byte) string {
+	hash := md5.Sum(data)
+	return fmt.Sprintf("%x", hash)
+}
+
 func install() {
 	wasmBytes, err := ioutil.ReadFile(wasmFile)
 	if err != nil {
@@ -85,21 +81,13 @@ func install() {
 	fmt.Printf("bytes num is %d\n", len(wasmBytes))
 	fmt.Printf("last 5 bytes is %v %v %v %v %v\n", wasmBytes[len(wasmBytes)-5], wasmBytes[len(wasmBytes)-4], wasmBytes[len(wasmBytes)-3], wasmBytes[len(wasmBytes)-2], wasmBytes[len(wasmBytes)-1])
 
-	compressedData := CompressByBZip2(wasmBytes)
-	fmt.Printf("after compress:\n")
-	fmt.Printf("bytes num is %d\n", len(compressedData))
-	fmt.Printf("last 5 bytes is %v %v %v %v %v\n", compressedData[len(compressedData)-5], compressedData[len(compressedData)-4], compressedData[len(compressedData)-3], compressedData[len(compressedData)-2], compressedData[len(compressedData)-1])
+	hash := calcMd5String32(wasmBytes)
+	fmt.Printf("hash is %v\n", hash)
 
-	wasmBytes, err = UnCompress(compressedData)
-	if err != nil {
-		panic(err.Error())
-	}
-	fmt.Printf("after uncompress:\n")
+	wasmBytes = CompressByBZip2(wasmBytes)
+	fmt.Printf("after compress:\n")
 	fmt.Printf("bytes num is %d\n", len(wasmBytes))
 	fmt.Printf("last 5 bytes is %v %v %v %v %v\n", wasmBytes[len(wasmBytes)-5], wasmBytes[len(wasmBytes)-4], wasmBytes[len(wasmBytes)-3], wasmBytes[len(wasmBytes)-2], wasmBytes[len(wasmBytes)-1])
-
-	hash := md5.Sum(wasmBytes)
-	fmt.Printf("hash is %v\n", hash)
 
 	db, err := sql.Open("mysql", "root@tcp(127.0.0.1:15306)/mysql")
 	if err != nil {
@@ -112,12 +100,13 @@ func install() {
 	}
 	fmt.Println("database connected")
 
-	insertWasmTemplate := `insert ignore into mysql.wasm_binary(name,runtime,data,compress_algorithm,md5_hash_before_compress) values (%a,%a,%a,'bzip2',%a);`
+	insertWasmTemplate := `insert ignore into mysql.wasm_binary(name,runtime,data,compress_algorithm,hash_before_compress) values (%a,%a,%a,%a,%a);`
 	insertWasmSQL, err := sqlparser.ParseAndBind(insertWasmTemplate,
 		sqltypes.StringBindVariable(wasmName),
 		sqltypes.StringBindVariable(runtime),
 		sqltypes.BytesBindVariable(wasmBytes),
-		sqltypes.BytesBindVariable(hash[:]))
+		sqltypes.StringBindVariable(compressAlgorithm),
+		sqltypes.StringBindVariable(hash))
 	if err != nil {
 		panic(err.Error())
 	}

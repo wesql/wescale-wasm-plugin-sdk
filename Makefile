@@ -10,7 +10,7 @@ build-wazero:
 
 ########################################################################################################
 
-reborn: uninstall clean build install
+reborn: clean build uninstall install
 
 clean:
 	rm -f ./bin/*

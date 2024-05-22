@@ -15,26 +15,42 @@ import (
 )
 
 var (
-	command           = "install"
-	wasmFile          = "./bin/myguest.wasm"
-	wasmName          = "test"
-	runtime           = "wazero"
-	compressAlgorithm = "bzip2"
+	command = "install"
+)
 
-	filterName               = "wasm"
-	desc                     = "wasm test"
-	priority                 = "999"
-	status                   = "ACTIVE"
-	plans                    = ""
-	fullyQualifiedTableNames = ""
-	queryRegex               = ``
-	queryTemplate            = ""
-	requestIpRegex           = ``
-	userRegex                = ``
-	leadingCommentRegex      = ``
-	trailingCommentRegex     = ``
-	bindVarConds             = ""
-	action                   = "wasm_plugin" // todo remove
+// mysql config
+var (
+	mysqlHost     = "127.0.0.1"
+	mysqlPort     = 15306
+	mysqlUser     = "root"
+	mysqlPassword = ""
+	mysqlDb       = "mysql"
+)
+
+// wasm config
+var (
+	wasmFile              = "./bin/myguest.wasm"
+	wasmName              = "test"
+	wasmRuntime           = "wazero"
+	wasmCompressAlgorithm = "bzip2"
+)
+
+// filter config
+var (
+	filterName                     = "wasm"
+	filterDesc                     = "wasm test"
+	filterPriority                 = "999"
+	filterStatus                   = "ACTIVE"
+	filterPlans                    = ""
+	filterFullyQualifiedTableNames = ""
+	filterQueryRegex               = ``
+	filterQueryTemplate            = ""
+	filterRequestIpRegex           = ``
+	filterUserRegex                = ``
+	filterLeadingCommentRegex      = ``
+	filterTrailingCommentRegex     = ``
+	filterBindVarConds             = ""
+	filterAction                   = "wasm_plugin" // todo remove
 )
 
 func CompressByBZip2(originalData []byte) []byte {
@@ -54,7 +70,33 @@ func CompressByBZip2(originalData []byte) []byte {
 
 func init() {
 	pflag.StringVar(&command, "command", command, "the command of the script. default is install")
+
+	pflag.StringVar(&mysqlUser, "mysql_user", mysqlUser, "the user of mysql")
+	pflag.StringVar(&mysqlPassword, "mysql_password", mysqlPassword, "the password of mysql")
+	pflag.StringVar(&mysqlHost, "mysql_host", mysqlHost, "the host of mysql")
+	pflag.IntVar(&mysqlPort, "mysql_port", mysqlPort, "the port of mysql")
+	pflag.StringVar(&mysqlDb, "mysql_db", mysqlDb, "the db of mysql")
+
 	pflag.StringVar(&wasmFile, "wasm_file", wasmFile, "the wasmFile of wasm file")
+	pflag.StringVar(&wasmName, "wasm_name", wasmName, "the wasmName of wasm")
+	pflag.StringVar(&wasmRuntime, "wasm_runtime", wasmRuntime, "the wasm_runtime of wasm")
+	pflag.StringVar(&wasmCompressAlgorithm, "wasm_compress_algorithm", wasmCompressAlgorithm, "the wasm_compress_algorithm of wasm")
+
+	pflag.StringVar(&filterName, "filter_name", filterName, "the filter_name of filter")
+	pflag.StringVar(&filterDesc, "filter_desc", filterDesc, "the filter_desc of filter")
+	pflag.StringVar(&filterPriority, "filter_priority", filterPriority, "the filter_priority of filter")
+	pflag.StringVar(&filterStatus, "filter_status", filterStatus, "the filter_status of filter")
+	pflag.StringVar(&filterPlans, "filter_plans", filterPlans, "the filter_plans of filter")
+	pflag.StringVar(&filterFullyQualifiedTableNames, "filter_fully_qualified_table_names", filterFullyQualifiedTableNames, "the filter_fully_qualified_table_names of filter")
+	pflag.StringVar(&filterQueryRegex, "filter_query_regex", filterQueryRegex, "the filter_query_regex of filter")
+	pflag.StringVar(&filterQueryTemplate, "filter_query_template", filterQueryTemplate, "the filter_query_template of filter")
+	pflag.StringVar(&filterRequestIpRegex, "filter_request_ip_regex", filterRequestIpRegex, "the filter_request_ip_regex of filter")
+	pflag.StringVar(&filterUserRegex, "filter_user_regex", filterUserRegex, "the filter_user_regex of filter")
+	pflag.StringVar(&filterLeadingCommentRegex, "filter_leading_comment_regex", filterLeadingCommentRegex, "the filter_leading_comment_regex of filter")
+	pflag.StringVar(&filterTrailingCommentRegex, "filter_trailing_comment_regex", filterTrailingCommentRegex, "the filter_trailing_comment_regex of filter")
+	pflag.StringVar(&filterBindVarConds, "filter_bind_var_conds", filterBindVarConds, "the filter_bind_var_conds of filter")
+	pflag.StringVar(&filterAction, "filter_action", filterAction, "the filter_action of filter")
+
 	pflag.Parse()
 }
 
@@ -89,7 +131,7 @@ func install() {
 	fmt.Printf("bytes num is %d\n", len(wasmBytes))
 	fmt.Printf("last 5 bytes is %v %v %v %v %v\n", wasmBytes[len(wasmBytes)-5], wasmBytes[len(wasmBytes)-4], wasmBytes[len(wasmBytes)-3], wasmBytes[len(wasmBytes)-2], wasmBytes[len(wasmBytes)-1])
 
-	db, err := sql.Open("mysql", "root@tcp(127.0.0.1:15306)/mysql")
+	db, err := sql.Open("mysql", generateMysqlDsn())
 	if err != nil {
 		panic(err.Error())
 	}
@@ -100,12 +142,12 @@ func install() {
 	}
 	fmt.Println("database connected")
 
-	insertWasmTemplate := `insert ignore into mysql.wasm_binary(name,runtime,data,compress_algorithm,hash_before_compress) values (%a,%a,%a,%a,%a);`
+	insertWasmTemplate := `insert ignore into mysql.wasm_binary(name,wasmRuntime,data,compress_algorithm,hash_before_compress) values (%a,%a,%a,%a,%a);`
 	insertWasmSQL, err := sqlparser.ParseAndBind(insertWasmTemplate,
 		sqltypes.StringBindVariable(wasmName),
-		sqltypes.StringBindVariable(runtime),
+		sqltypes.StringBindVariable(wasmRuntime),
 		sqltypes.BytesBindVariable(wasmBytes),
-		sqltypes.StringBindVariable(compressAlgorithm),
+		sqltypes.StringBindVariable(wasmCompressAlgorithm),
 		sqltypes.StringBindVariable(hash))
 	if err != nil {
 		panic(err.Error())
@@ -117,8 +159,8 @@ func install() {
 	}
 
 	createFilterTemplate := `create filter if not exists %s (
-	  desc='%s',
-	  priority='%s',
+	  filterDesc='%s',
+	  filterPriority='%s',
 	  status='%s'
 		)
 		with_pattern(
@@ -140,19 +182,19 @@ func install() {
 	actionArgs := fmt.Sprintf("wasm_binary_name=\"%v\"", wasmName)
 	query := fmt.Sprintf(createFilterTemplate,
 		filterName,
-		desc,
-		priority,
-		status,
-		plans,
-		fullyQualifiedTableNames,
-		queryRegex,
-		queryTemplate,
-		requestIpRegex,
-		userRegex,
-		leadingCommentRegex,
-		trailingCommentRegex,
-		bindVarConds,
-		action,
+		filterDesc,
+		filterPriority,
+		filterStatus,
+		filterPlans,
+		filterFullyQualifiedTableNames,
+		filterQueryRegex,
+		filterQueryTemplate,
+		filterRequestIpRegex,
+		filterUserRegex,
+		filterLeadingCommentRegex,
+		filterTrailingCommentRegex,
+		filterBindVarConds,
+		filterAction,
 		actionArgs)
 
 	_, err = db.Query(query)
@@ -165,7 +207,7 @@ func uninstall() {
 	dropFilterSQL := fmt.Sprintf("drop filter %s", filterName)
 	deleteWasmSQL := fmt.Sprintf("delete from mysql.wasm_binary where name='%s'", wasmName)
 
-	db, err := sql.Open("mysql", "root@tcp(127.0.0.1:15306)/mysql")
+	db, err := sql.Open("mysql", generateMysqlDsn())
 	if err != nil {
 		panic(err.Error())
 	}
@@ -195,4 +237,9 @@ func uninstall() {
 			fmt.Printf("wasm %s not found\n", wasmName)
 		}
 	}
+}
+
+func generateMysqlDsn() string {
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", mysqlUser, mysqlPassword, mysqlHost, mysqlPort, mysqlDb)
+	return dsn
 }

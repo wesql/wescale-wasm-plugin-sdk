@@ -1,4 +1,4 @@
-package tools
+package common
 
 // #include <stdlib.h>
 import "C"

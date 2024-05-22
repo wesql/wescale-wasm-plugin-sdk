@@ -15,9 +15,8 @@ import (
 	"vitess.io/vitess/go/vt/sqlparser"
 )
 
-var path = "./bin/myguest.wasm"
-
 var (
+	wasmFile = "./bin/myguest.wasm"
 	wasmName = "test"
 	runtime  = "wazero"
 
@@ -35,7 +34,6 @@ var (
 	trailingCommentRegex     = ``
 	bindVarConds             = ""
 	action                   = "wasm_plugin" // todo remove
-
 )
 
 func CompressByBZip2(originalData []byte) []byte {
@@ -63,12 +61,12 @@ func UnCompress(compressedData []byte) ([]byte, error) {
 }
 
 func init() {
-	pflag.StringVar(&path, "wasm_file", path, "the path of wasm file")
+	pflag.StringVar(&wasmFile, "wasm_file", wasmFile, "the wasmFile of wasm file")
 	pflag.Parse()
 }
 
 func main() {
-	wasmBytes, err := ioutil.ReadFile(path)
+	wasmBytes, err := ioutil.ReadFile(wasmFile)
 	if err != nil {
 		log.Panicf("error when reading wasm bytes: %v", err)
 	}

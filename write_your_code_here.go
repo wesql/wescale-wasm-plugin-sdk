@@ -8,7 +8,7 @@ import (
 	"wescale-wasm-plugin-template/common/host_functions"
 )
 
-func RunBeforeExecution() {
+func RunBeforeExecution() error {
 	// TODO: Write your code here
 	hostfunction.GlobalLock()
 	var moduleCount int
@@ -40,7 +40,7 @@ func RunBeforeExecution() {
 
 	hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	hostfunction.GlobalUnlock()
-
+	return errors.New("error test")
 }
 
 func RunAfterExecution(exchange *common.WasmPluginRunAfterExecutionExchange) {

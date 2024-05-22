@@ -18,8 +18,10 @@ func WazeroGuestFuncBeforeExecution(hostInstancePtr, hostModulePtr uint64) {
 	hostfunction.HostInstancePtr = hostInstancePtr
 	hostfunction.HostModulePtr = hostModulePtr
 
-	wescale_wasm_plugin_template.RunBeforeExecution()
-
+	err := wescale_wasm_plugin_template.RunBeforeExecution()
+	if err != nil {
+		hostfunction.SetErrorMessage(err.Error())
+	}
 }
 
 //export wazeroGuestFuncAfterExecution

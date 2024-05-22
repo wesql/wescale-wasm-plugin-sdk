@@ -134,3 +134,11 @@ func ErrorLog(message string) {
 	ptr, size := common.StringToPtr(message)
 	errorLogOnHost(ptr, size)
 }
+
+func SetErrorMessage(errMessage string) {
+	if len(errMessage) == 0 {
+		return
+	}
+	ptr, size := common.StringToPtr(errMessage)
+	setErrorMessageOnHost(HostInstancePtr, ptr, size)
+}

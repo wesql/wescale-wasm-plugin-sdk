@@ -6,7 +6,7 @@ build-scripts:
 
 build-wazero:
 	mkdir -p bin
-	tinygo build --no-debug -o ./bin/myguest.wasm -target=wasi -scheduler=none ./wazero/wazero_main.go
+	tinygo build --no-debug -o ./bin/myguest.wasm -target=wasi -scheduler=none ./internal/wazero/wazero_main.go
 
 ########################################################################################################
 

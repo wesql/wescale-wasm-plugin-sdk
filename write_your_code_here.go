@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
-	"wescale-wasm-plugin-template/common"
-	"wescale-wasm-plugin-template/common/host_functions"
+	"wescale-wasm-plugin-template/internal"
+	"wescale-wasm-plugin-template/internal/host_functions"
 )
 
 func RunBeforeExecution() error {
@@ -13,7 +13,7 @@ func RunBeforeExecution() error {
 	hostfunction.GlobalLock()
 	var moduleCount int
 	countBytes, err := hostfunction.GetModuleValueByKey("moduleCount")
-	if errors.Is(err, common.ErrorStatusNotFound) {
+	if errors.Is(err, internal.ErrorStatusNotFound) {
 		moduleCount = 0
 		hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	}

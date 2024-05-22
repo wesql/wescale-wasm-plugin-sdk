@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	wescale_wasm_plugin_template "wescale-wasm-plugin-template"
-	"wescale-wasm-plugin-template/common"
+	"wescale-wasm-plugin-template/internal"
 )
 
 func main() {}
@@ -57,7 +57,7 @@ func wasmerGuestFunc() {
 	// todo, how to return err?
 	var err error
 
-	e := common.WasmPluginRunBeforeExecutionExchange{}
+	e := internal.WasmPluginRunBeforeExecutionExchange{}
 	//fmt.Printf("guest bytesbuffer len: %d buffer: %v\n", len(bytesBuffer), bytesBuffer)
 	err = json.Unmarshal(bytesBuffer, &e)
 	if err != nil {

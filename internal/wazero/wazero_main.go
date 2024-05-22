@@ -5,7 +5,7 @@ import "C"
 
 import (
 	wescale_wasm_plugin_template "wescale-wasm-plugin-template"
-	"wescale-wasm-plugin-template/common/host_functions"
+	"wescale-wasm-plugin-template/internal/host_functions"
 )
 
 // main is required for TinyGo to compile to Wasm.

@@ -16,6 +16,7 @@ import (
 )
 
 var (
+	command  = "install"
 	wasmFile = "./bin/myguest.wasm"
 	wasmName = "test"
 	runtime  = "wazero"
@@ -61,11 +62,21 @@ func UnCompress(compressedData []byte) ([]byte, error) {
 }
 
 func init() {
+	pflag.StringVar(&command, "command", command, "the command of the script. default is install")
 	pflag.StringVar(&wasmFile, "wasm_file", wasmFile, "the wasmFile of wasm file")
 	pflag.Parse()
 }
 
 func main() {
+	switch command {
+	case "install":
+		install()
+	case "uninstall":
+		uninstall()
+	}
+}
+
+func install() {
 	wasmBytes, err := ioutil.ReadFile(wasmFile)
 	if err != nil {
 		log.Panicf("error when reading wasm bytes: %v", err)
@@ -158,5 +169,41 @@ func main() {
 	_, err = db.Query(query)
 	if err != nil {
 		panic(err.Error())
+	}
+}
+
+func uninstall() {
+	dropFilterSQL := fmt.Sprintf("drop filter %s", filterName)
+	deleteWasmSQL := fmt.Sprintf("delete from mysql.wasm_binary where name='%s'", wasmName)
+
+	db, err := sql.Open("mysql", "root@tcp(127.0.0.1:15306)/mysql")
+	if err != nil {
+		panic(err.Error())
+	}
+	defer db.Close()
+
+	if err := db.Ping(); err != nil {
+		panic("database can't connect")
+	}
+	fmt.Println("database connected")
+
+	{
+		r, err := db.Exec(dropFilterSQL)
+		if err != nil {
+			panic(err.Error())
+		}
+		if affected, _ := r.RowsAffected(); affected == 0 {
+			fmt.Printf("filter %s not found\n", filterName)
+		}
+	}
+
+	{
+		r, err := db.Exec(deleteWasmSQL)
+		if err != nil {
+			panic(err.Error())
+		}
+		if affected, _ := r.RowsAffected(); affected == 0 {
+			fmt.Printf("wasm %s not found\n", wasmName)
+		}
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/dsnet/compress/bzip2"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/spf13/pflag"
 	"io"
 	"io/ioutil"
 	"log"
@@ -14,7 +15,7 @@ import (
 	"vitess.io/vitess/go/vt/sqlparser"
 )
 
-const path = "./wazero/myGuest.wasm"
+var path = "./bin/myguest.wasm"
 
 var (
 	wasmName = "test"
@@ -59,6 +60,11 @@ func UnCompress(compressedData []byte) ([]byte, error) {
 		return nil, err
 	}
 	return decompressedData, nil
+}
+
+func init() {
+	pflag.StringVar(&path, "wasm_file", path, "the path of wasm file")
+	pflag.Parse()
 }
 
 func main() {

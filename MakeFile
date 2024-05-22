@@ -1,7 +1,0 @@
-.PHONY: wazero hello
-
-hello:
-	@echo "hello"
-
-wazero:
-	cd ./wazero && tinygo build --no-debug -o myguest.wasm -target=wasi -scheduler=none wazero_main.go

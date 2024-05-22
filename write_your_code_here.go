@@ -40,9 +40,14 @@ func RunBeforeExecution() error {
 
 	hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	hostfunction.GlobalUnlock()
-	return errors.New("error test")
+	return errors.New("error test foo bar")
 }
 
-func RunAfterExecution(exchange *common.WasmPluginRunAfterExecutionExchange) {
+func RunAfterExecution() error {
 	// TODO: Write your code here
+	msg, _ := hostfunction.GetErrorMessage()
+	if msg != "" {
+		return errors.New(msg + "hahahaha")
+	}
+	return nil
 }

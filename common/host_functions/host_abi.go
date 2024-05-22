@@ -48,3 +48,6 @@ func errorLogOnHost(ptr uint32, size uint32) common.Status
 
 //export SetErrorMessageOnHost
 func setErrorMessageOnHost(hostInstancePtr uint64, errMessagePtr uint32, errMessageSize uint32) common.Status
+
+//export GetErrorMessageOnHost
+func getErrorMessageOnHost(hostInstancePtr uint64, errMessagePtr *uint32, errMessageSize *uint32) common.Status

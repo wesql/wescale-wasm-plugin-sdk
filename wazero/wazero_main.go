@@ -4,9 +4,7 @@ package main
 import "C"
 
 import (
-	"encoding/json"
 	wescale_wasm_plugin_template "wescale-wasm-plugin-template"
-	"wescale-wasm-plugin-template/common"
 	"wescale-wasm-plugin-template/common/host_functions"
 )
 
@@ -24,22 +22,12 @@ func WazeroGuestFuncBeforeExecution(hostInstancePtr, hostModulePtr uint64) {
 	}
 }
 
-//export wazeroGuestFuncAfterExecution
-func wazeroGuestFuncAfterExecution(ptr, size uint32) (ptrSize uint64) {
-	dataFromHost := common.PtrToString(ptr, size)
-
-	w := common.WasmPluginRunAfterExecutionExchange{}
-	// todo, how to handle errors?
-	json.Unmarshal([]byte(dataFromHost), &w)
-
-	wescale_wasm_plugin_template.RunAfterExecution(&w)
-
-	// todo, how to handle errors?
-	dataToHost, _ := json.Marshal(&w)
-	dataToHostString := string(dataToHost)
-
-	ptr, size = common.StringToPtr(dataToHostString)
-	return (uint64(ptr) << uint64(32)) | uint64(size)
+//export WazeroGuestFuncAfterExecution
+func WazeroGuestFuncAfterExecution() {
+	err := wescale_wasm_plugin_template.RunAfterExecution()
+	if err != nil {
+		hostfunction.SetErrorMessage(err.Error())
+	}
 }
 
 //export proxy_on_memory_allocate

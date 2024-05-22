@@ -142,3 +142,14 @@ func SetErrorMessage(errMessage string) {
 	ptr, size := common.StringToPtr(errMessage)
 	setErrorMessageOnHost(HostInstancePtr, ptr, size)
 }
+
+func GetErrorMessage() (string, error) {
+	var ptr uint32
+	var retSize uint32
+
+	err := common.StatusToError(getErrorMessageOnHost(HostInstancePtr, &ptr, &retSize))
+	if err != nil {
+		return "", err
+	}
+	return common.PtrToString(ptr, retSize), nil
+}

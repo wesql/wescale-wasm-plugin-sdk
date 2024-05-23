@@ -10,8 +10,6 @@ import (
 	"github.com/spf13/pflag"
 	"io/ioutil"
 	"log"
-	"vitess.io/vitess/go/sqltypes"
-	"vitess.io/vitess/go/vt/sqlparser"
 )
 
 var (
@@ -142,25 +140,11 @@ func install() {
 	}
 	fmt.Println("database connected")
 
-	insertWasmTemplate := `insert ignore into mysql.wasm_binary(name,wasmRuntime,data,compress_algorithm,hash_before_compress) values (%a,%a,%a,%a,%a);`
-	insertWasmSQL, err := sqlparser.ParseAndBind(insertWasmTemplate,
-		sqltypes.StringBindVariable(wasmName),
-		sqltypes.StringBindVariable(wasmRuntime),
-		sqltypes.BytesBindVariable(wasmBytes),
-		sqltypes.StringBindVariable(wasmCompressAlgorithm),
-		sqltypes.StringBindVariable(hash))
-	if err != nil {
-		panic(err.Error())
-	}
-	_, err = db.Query(insertWasmSQL)
-	fmt.Printf("insert sql len %v\n", len(insertWasmSQL))
-	if err != nil {
-		panic(err.Error())
-	}
+	insertIntoWasmBinary(db, wasmName, wasmRuntime, wasmCompressAlgorithm, wasmBytes, hash)
 
 	createFilterTemplate := `create filter if not exists %s (
-	  filterDesc='%s',
-	  filterPriority='%s',
+	  desc='%s',
+	  priority='%s',
 	  status='%s'
 		)
 		with_pattern(
@@ -236,6 +220,21 @@ func uninstall() {
 		if affected, _ := r.RowsAffected(); affected == 0 {
 			fmt.Printf("wasm %s not found\n", wasmName)
 		}
+	}
+}
+
+func insertIntoWasmBinary(db *sql.DB, wasmName, wasmRuntime, wasmCompressAlgorithm string, wasmBytes []byte, hash string) {
+	preparedStmt, err := db.Prepare(`insert ignore into mysql.wasm_binary(name,runtime,data,compress_algorithm,hash_before_compress) values (?,?,?,?,?)`)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer preparedStmt.Close()
+	r, err := preparedStmt.Exec(wasmName, wasmRuntime, wasmBytes, wasmCompressAlgorithm, hash)
+	if err != nil {
+		panic(err.Error())
+	}
+	if affected, _ := r.RowsAffected(); affected != 1 {
+		panic("insert failed")
 	}
 }
 

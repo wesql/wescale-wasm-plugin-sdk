@@ -50,14 +50,10 @@ func errorLogOnHost(ptr uint32, size uint32) internal.Status
 func setErrorMessageOnHost(hostInstancePtr uint64, errMessagePtr uint32, errMessageSize uint32) internal.Status
 
 //export GetErrorMessageOnHost
-<<<<<<< Updated upstream:internal/host_functions/host_abi.go
-func getErrorMessageOnHost(hostInstancePtr uint64, errMessagePtr *uint32, errMessageSize *uint32) internal.Status
-=======
-func getErrorMessageOnHost(hostInstancePtr uint64, returnErrMessagePtr *uint32, returnErrMessageSize *uint32) common.Status
+func getErrorMessageOnHost(hostInstancePtr uint64, returnErrMessagePtr *uint32, returnErrMessageSize *uint32) internal.Status
 
 //export GetQueryResultOnHost
-func getQueryResultOnHost(hostInstancePtr uint64, returnQueryRstBytesPtr *uint32, returnQueryRstBytesSize *uint32) common.Status
+func getQueryResultOnHost(hostInstancePtr uint64, returnQueryRstBytesPtr *uint32, returnQueryRstBytesSize *uint32) internal.Status
 
 //export SetQueryResultOnHost
-func setQueryResultOnHost(hostInstancePtr uint64, returnQueryRstBytesPtr uint32, returnQueryRstBytesSize uint32) common.Status
->>>>>>> Stashed changes:common/host_functions/host_abi.go
+func setQueryResultOnHost(hostInstancePtr uint64, returnQueryRstBytesPtr uint32, returnQueryRstBytesSize uint32) internal.Status

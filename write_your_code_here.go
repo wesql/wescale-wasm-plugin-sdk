@@ -45,9 +45,12 @@ func RunBeforeExecution() error {
 
 func RunAfterExecution() error {
 	// TODO: Write your code here
-	msg, _ := hostfunction.GetErrorMessage()
-	if msg != "" {
-		return errors.New(msg + "hahahaha")
-	}
+	//qr, err := hostfunction.GetQueryResult()
+	//if err != nil {
+	//	return err
+	//}
+	//qr.Rows = qr.Rows[:len(qr.Rows)-1]
+	//qr.RowsAffected = qr.RowsAffected - 1
+	//return hostfunction.SetQueryResult(qr)
 	return nil
 }

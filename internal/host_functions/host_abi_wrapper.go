@@ -153,3 +153,29 @@ func GetErrorMessage() (string, error) {
 	}
 	return internal.PtrToString(ptr, retSize), nil
 }
+
+//func GetQueryResult() (*sqltypes.Result, error) {
+//	var ptr uint32
+//	var retSize uint32
+//
+//	err := common.StatusToError(getQueryResultOnHost(HostInstancePtr, &ptr, &retSize))
+//	if err != nil {
+//		return nil, err
+//	}
+//	bytes := common.PtrToBytes(ptr, retSize)
+//	queryResult := sqltypes.Result{}
+//	err = json.Unmarshal(bytes, &queryResult)
+//	if err != nil {
+//		return nil, err
+//	}
+//	return &queryResult, nil
+//}
+//
+//func SetQueryResult(queryResult *sqltypes.Result) error {
+//	bytes, err := json.Marshal(queryResult)
+//	if err != nil {
+//		return nil
+//	}
+//	ptr, size := common.BytesToPtr(bytes)
+//	return common.StatusToError(setQueryOnHost(HostInstancePtr, ptr, size))
+//}

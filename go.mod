@@ -5,6 +5,7 @@ go 1.22.3
 require (
 	github.com/go-sql-driver/mysql v1.8.1
 	golang.org/x/sync v0.7.0
+	vitess.io/vitess v0.19.4
 )
 
 require (
@@ -17,5 +18,4 @@ require (
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240304212257-790db918fca8 // indirect
 	google.golang.org/grpc v1.62.1 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
-	vitess.io/vitess v0.19.4 // indirect
 )

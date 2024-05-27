@@ -4,7 +4,9 @@ package main
 import "C"
 
 import (
+	"errors"
 	wescale_wasm_plugin_template "wescale-wasm-plugin-template"
+	"wescale-wasm-plugin-template/internal"
 	"wescale-wasm-plugin-template/internal/host_functions"
 )
 
@@ -24,9 +26,34 @@ func WazeroGuestFuncBeforeExecution(hostInstancePtr, hostModulePtr uint64) {
 
 //export WazeroGuestFuncAfterExecution
 func WazeroGuestFuncAfterExecution() {
-	err := wescale_wasm_plugin_template.RunAfterExecution()
-	if err != nil {
+	qr, err := hostfunction.GetQueryResult()
+	if err != nil && !errors.Is(err, internal.StatusToError(internal.StatusBadArgument)) {
+		// unknown error
 		hostfunction.SetErrorMessage(err.Error())
+		return
+	}
+
+	errMessageBefore, err := hostfunction.GetErrorMessage()
+	if err != nil {
+		if !errors.Is(err, internal.StatusToError(internal.StatusBadArgument)) {
+			// unknown error
+			hostfunction.SetErrorMessage(err.Error())
+			return
+		} else {
+			errMessageBefore = ""
+		}
+
+	}
+	var errBefore error
+	if errMessageBefore != "" {
+		errBefore = errors.New(errMessageBefore)
+	}
+
+	finalQueryResult, finalErr := wescale_wasm_plugin_template.RunAfterExecution(qr, errBefore)
+
+	hostfunction.SetQueryResult(finalQueryResult)
+	if finalErr != nil {
+		hostfunction.SetErrorMessage(finalErr.Error())
 	}
 }
 

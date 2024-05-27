@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"strconv"
 	"wescale-wasm-plugin-template/internal"
-	"wescale-wasm-plugin-template/internal/host_functions"
+	hostfunction "wescale-wasm-plugin-template/internal/host_functions"
+	"wescale-wasm-plugin-template/proto/query"
 )
 
 func RunBeforeExecution() error {
@@ -40,17 +41,16 @@ func RunBeforeExecution() error {
 
 	hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	hostfunction.GlobalUnlock()
-	return errors.New("error test foo bar")
+	return nil
 }
 
-func RunAfterExecution() error {
+func RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error) {
 	// TODO: Write your code here
-	//qr, err := hostfunction.GetQueryResult()
-	//if err != nil {
-	//	return err
-	//}
-	//qr.Rows = qr.Rows[:len(qr.Rows)-1]
-	//qr.RowsAffected = qr.RowsAffected - 1
-	//return hostfunction.SetQueryResult(qr)
-	return nil
+	// you should know that the queryResult can be nil
+
+	if queryResult == nil {
+		return nil, fmt.Errorf("new error in after: %v", errBefore)
+	}
+	queryResult.Rows = append(queryResult.Rows, queryResult.Rows...)
+	return queryResult, nil
 }

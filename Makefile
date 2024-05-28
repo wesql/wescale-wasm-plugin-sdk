@@ -31,7 +31,9 @@ uninstall:
 
 
 
-
+minimaltools:
+	echo $$(date): Installing minimal dependencies
+	BUILD_CHROME=0 BUILD_JAVA=0 BUILD_CONSUL=0 ./tools/bootstrap.sh
 
 install_protoc-gen-go:
 	GOBIN=$(WESCALEROOT)/bin go install google.golang.org/protobuf/cmd/protoc-gen-go@$(shell go list -m -f '{{ .Version }}' google.golang.org/protobuf)
@@ -44,7 +46,7 @@ PROTO_GO_OUTS = $(foreach name, $(PROTO_SRC_NAMES), proto/$(name)/$(name).pb.go)
 # This rule rebuilds all the go files from the proto definitions for gRPC.
 proto: $(PROTO_GO_OUTS)
 
-$(PROTO_GO_OUTS): install_protoc-gen-go proto/*.proto
+$(PROTO_GO_OUTS): minimaltools install_protoc-gen-go proto/*.proto
 	$(WESCALEROOT)/bin/protoc \
 		--go_out=. --plugin protoc-gen-go="${WESCALEROOTBIN}/protoc-gen-go" \
 		--go-grpc_out=. --plugin protoc-gen-go-grpc="${WESCALEROOTBIN}/protoc-gen-go-grpc" \

@@ -7,8 +7,8 @@ import (
 	"encoding/binary"
 	"encoding/json"
 	"fmt"
-	wescale_wasm_plugin_template "wescale-wasm-plugin-template"
-	"wescale-wasm-plugin-template/internal"
+	wescale_wasm_plugin_template "github.com/wesql/wescale-wasm-plugin-template"
+	"github.com/wesql/wescale-wasm-plugin-template/internal"
 )
 
 func main() {}

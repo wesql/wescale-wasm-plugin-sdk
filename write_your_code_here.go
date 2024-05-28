@@ -3,10 +3,10 @@ package wescale_wasm_plugin_template
 import (
 	"errors"
 	"fmt"
+	"github.com/wesql/wescale-wasm-plugin-template/internal"
+	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions"
+	"github.com/wesql/wescale-wasm-plugin-template/proto/query"
 	"strconv"
-	"wescale-wasm-plugin-template/internal"
-	hostfunction "wescale-wasm-plugin-template/internal/host_functions"
-	"wescale-wasm-plugin-template/proto/query"
 )
 
 func RunBeforeExecution() error {

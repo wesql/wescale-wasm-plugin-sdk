@@ -1,4 +1,4 @@
-module wescale-wasm-plugin-template
+module github.com/wesql/wescale-wasm-plugin-template
 
 go 1.22.3
 

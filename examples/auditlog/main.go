@@ -2,8 +2,8 @@ package auditlog
 
 import (
 	"fmt"
-	hostfunction "wescale-wasm-plugin-template/internal/host_functions"
-	"wescale-wasm-plugin-template/proto/query"
+	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions"
+	"github.com/wesql/wescale-wasm-plugin-template/proto/query"
 )
 
 func RunBeforeExecution() error {

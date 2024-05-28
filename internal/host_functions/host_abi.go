@@ -1,7 +1,7 @@
 package hostfunction
 
 import (
-	"wescale-wasm-plugin-template/internal"
+	"github.com/wesql/wescale-wasm-plugin-template/internal"
 )
 
 //export GetGlobalValueByKeyOnHost

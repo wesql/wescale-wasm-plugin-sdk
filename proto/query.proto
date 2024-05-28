@@ -24,7 +24,7 @@ limitations under the License.
 // RPC calls to Vttablet.
 
 syntax = "proto3";
-option go_package = "proto/query";
+option go_package = "internal/proto/query";
 
 package query;
 

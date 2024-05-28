@@ -42,7 +42,7 @@ install_protoc-gen-go:
 
 PROTO_SRCS = $(wildcard proto/*.proto)
 PROTO_SRC_NAMES = $(basename $(notdir $(PROTO_SRCS)))
-PROTO_GO_OUTS = $(foreach name, $(PROTO_SRC_NAMES), proto/$(name)/$(name).pb.go)
+PROTO_GO_OUTS = $(foreach name, $(PROTO_SRC_NAMES), internal/proto/$(name)/$(name).pb.go)
 # This rule rebuilds all the go files from the proto definitions for gRPC.
 proto: $(PROTO_GO_OUTS)
 
@@ -52,7 +52,7 @@ $(PROTO_GO_OUTS): minimaltools install_protoc-gen-go proto/*.proto
 		--go-grpc_out=. --plugin protoc-gen-go-grpc="${WESCALEROOTBIN}/protoc-gen-go-grpc" \
 		--go-vtproto_out=. --plugin protoc-gen-go-vtproto="${WESCALEROOTBIN}/protoc-gen-go-vtproto" \
 		--go-vtproto_opt=features=marshal+unmarshal+size+pool \
-		--go-vtproto_opt=pool=proto/query/query.Row \
+		--go-vtproto_opt=pool=internal/proto/query/query.Row \
 		-I${PWD}/dist/vt-protoc-21.3/include:proto $(PROTO_SRCS)
 
 

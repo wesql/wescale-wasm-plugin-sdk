@@ -9,7 +9,6 @@ import (
 	protohelpers "github.com/planetscale/vtprotobuf/protohelpers"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	io "io"
-	sync "sync"
 )
 
 const (
@@ -261,30 +260,6 @@ func (m *Row) MarshalToSizedBufferVT(dAtA []byte) (int, error) {
 	return len(dAtA) - i, nil
 }
 
-var vtprotoPool_Row = sync.Pool{
-	New: func() interface{} {
-		return &Row{}
-	},
-}
-
-func (m *Row) ResetVT() {
-	if m != nil {
-		f0 := m.Lengths[:0]
-		f1 := m.Values[:0]
-		m.Reset()
-		m.Lengths = f0
-		m.Values = f1
-	}
-}
-func (m *Row) ReturnToVTPool() {
-	if m != nil {
-		m.ResetVT()
-		vtprotoPool_Row.Put(m)
-	}
-}
-func RowFromVTPool() *Row {
-	return vtprotoPool_Row.Get().(*Row)
-}
 func (m *QueryResult) SizeVT() (n int) {
 	if m == nil {
 		return 0
@@ -1032,7 +1007,7 @@ func (m *Row) UnmarshalVT(dAtA []byte) error {
 					}
 				}
 				elementCount = count
-				if elementCount != 0 && len(m.Lengths) == 0 && cap(m.Lengths) < elementCount {
+				if elementCount != 0 && len(m.Lengths) == 0 {
 					m.Lengths = make([]int64, 0, elementCount)
 				}
 				for iNdEx < postIndex {

@@ -24,11 +24,9 @@ limitations under the License.
 // RPC calls to Vttablet.
 
 syntax = "proto3";
-option go_package = "vitess.io/vitess/go/vt/proto/query";
+option go_package = "proto/query";
 
 package query;
-
-option java_package = "io.vitess.proto";
 
 // Type defines the various supported data types in bind vars
 // and query results.

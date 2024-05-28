@@ -1,8 +1,5 @@
 package main
 
-// #include <stdlib.h>
-import "C"
-
 import (
 	"errors"
 	wescale_wasm_plugin_template "github.com/wesql/wescale-wasm-plugin-template"

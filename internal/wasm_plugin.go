@@ -1,6 +1,6 @@
 package internal
 
-import "github.com/wesql/wescale-wasm-plugin-template/proto/query"
+import "github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
 
 type Plugin interface {
 	RunBeforeExecution() error

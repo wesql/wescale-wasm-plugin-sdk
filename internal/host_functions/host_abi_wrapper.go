@@ -3,7 +3,7 @@ package hostfunction
 import (
 	"errors"
 	"github.com/wesql/wescale-wasm-plugin-template/internal"
-	"github.com/wesql/wescale-wasm-plugin-template/proto/query"
+	"github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
 )
 
 var HostInstancePtr uint64

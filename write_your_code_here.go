@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"github.com/wesql/wescale-wasm-plugin-template/internal"
 	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions"
-	"github.com/wesql/wescale-wasm-plugin-template/proto/query"
+	"github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
 	"strconv"
 )
 

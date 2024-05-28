@@ -7,6 +7,7 @@ import (
 	"errors"
 	wescale_wasm_plugin_template "github.com/wesql/wescale-wasm-plugin-template"
 	"github.com/wesql/wescale-wasm-plugin-template/internal"
+	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions"
 )
 
 // main is required for TinyGo to compile to Wasm.

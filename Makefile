@@ -35,6 +35,32 @@ build-tools:
 	mkdir -p bin
 	go build -o ./bin/wescale_wasm ./cmd/wescale_wasm/main.go
 
+VERSION := 'v0.1.1'
+PLATFORMS := darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64
+SOURCE_DIR := ./cmd/wescale_wasm
+BINARY_NAME := wescale_wasm
+TARGET_DIR := ./bin
+
+cross-build-tools:
+	@for platform in $(PLATFORMS); do \
+		platform_split=($${platform//\// }); \
+		GOOS=$${platform_split[0]}; \
+		GOARCH=$${platform_split[1]}; \
+		output_name=$(BINARY_NAME)_$(VERSION)_$${GOOS}_$${GOARCH}; \
+		if [ $$GOOS = "windows" ]; then \
+			output_name+='.exe'; \
+		fi; \
+		output_path=$(TARGET_DIR)/$${output_name}; \
+		echo "Building $(VERSION) for $$GOOS/$$GOARCH..."; \
+		env GOOS=$$GOOS GOARCH=$$GOARCH go build -o $$output_path $(SOURCE_DIR); \
+		if [ $$? -ne 0 ]; then \
+			echo "An error has occurred! Aborting the script execution..."; \
+			exit 1; \
+		fi; \
+	done
+
+########################################################################################################
+
 build-examples:
 	# Iterate over all the examples and build them
 	for example in $(shell ls ./examples); do \

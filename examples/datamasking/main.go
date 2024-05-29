@@ -2,9 +2,7 @@ package main
 
 import (
 	"bytes"
-	"fmt"
 	"github.com/wesql/wescale-wasm-plugin-template/internal"
-	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions/v1alpha1"
 	"github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
 )
 
@@ -29,9 +27,6 @@ func (a *DataMaskingWasmPlugin) RunAfterExecution(queryResult *query.QueryResult
 		newValues := bytes.Buffer{}
 		var offset int64 = 0
 		for colIndex, colLength := range queryResult.Rows[rowIndex].Lengths {
-			hostfunction.InfoLog(fmt.Sprintf("value name: %s", queryResult.GetFields()[colIndex].Name))
-			hostfunction.InfoLog(fmt.Sprintf("value len: %d", queryResult.Rows[rowIndex].Lengths[colIndex]))
-			hostfunction.InfoLog(fmt.Sprintf("value type: %v", queryResult.GetFields()[colIndex].Type))
 			if colLength == -1 {
 				newLengths = append(newLengths, -1)
 				continue

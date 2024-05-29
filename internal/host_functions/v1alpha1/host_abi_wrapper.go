@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"errors"
-	"github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
+	"github.com/wesql/wescale-wasm-plugin/internal/proto/query"
 )
 
 var HostInstancePtr uint64

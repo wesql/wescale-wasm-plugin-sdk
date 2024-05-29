@@ -2,8 +2,8 @@ package main
 
 import (
 	"bytes"
-	"github.com/wesql/wescale-wasm-plugin-template/internal"
-	"github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
+	"github.com/wesql/wescale-wasm-plugin/internal"
+	"github.com/wesql/wescale-wasm-plugin/internal/proto/query"
 )
 
 func main() {

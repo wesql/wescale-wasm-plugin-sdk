@@ -53,7 +53,7 @@ clean:
 build: clean build-tools build-examples
 
 install:
-	./bin/wescale_wasm --command=install --wasm_file=./bin/auditlog.wasm
+	./bin/wescale_wasm --command=install --wasm_file=./bin/datamasking.wasm
 
 uninstall:
 	./bin/wescale_wasm --command=uninstall

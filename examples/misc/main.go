@@ -3,14 +3,14 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/wesql/wescale-wasm-plugin/internal"
-	hostfunction "github.com/wesql/wescale-wasm-plugin/internal/host_functions/v1alpha1"
-	"github.com/wesql/wescale-wasm-plugin/internal/proto/query"
+	"github.com/wesql/wescale-wasm-plugin/pkg"
+	hostfunction "github.com/wesql/wescale-wasm-plugin/pkg/host_functions/v1alpha1"
+	"github.com/wesql/wescale-wasm-plugin/pkg/proto/query"
 	"strconv"
 )
 
 func main() {
-	internal.SetWasmPlugin(&MiscWasmPlugin{})
+	pkg.SetWasmPlugin(&MiscWasmPlugin{})
 }
 
 type MiscWasmPlugin struct {

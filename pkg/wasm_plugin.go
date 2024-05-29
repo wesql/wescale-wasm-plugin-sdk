@@ -1,9 +1,9 @@
-package internal
+package pkg
 
 import (
 	"errors"
-	hostfunction "github.com/wesql/wescale-wasm-plugin/internal/host_functions/v1alpha1"
-	"github.com/wesql/wescale-wasm-plugin/internal/proto/query"
+	hostfunction "github.com/wesql/wescale-wasm-plugin/pkg/host_functions/v1alpha1"
+	"github.com/wesql/wescale-wasm-plugin/pkg/proto/query"
 )
 
 type WasmPlugin interface {

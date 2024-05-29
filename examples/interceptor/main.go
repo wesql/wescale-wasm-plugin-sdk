@@ -2,14 +2,14 @@ package main
 
 import (
 	"fmt"
-	"github.com/wesql/wescale-wasm-plugin/internal"
-	hostfunction "github.com/wesql/wescale-wasm-plugin/internal/host_functions/v1alpha1"
-	"github.com/wesql/wescale-wasm-plugin/internal/proto/query"
+	"github.com/wesql/wescale-wasm-plugin/pkg"
+	hostfunction "github.com/wesql/wescale-wasm-plugin/pkg/host_functions/v1alpha1"
+	"github.com/wesql/wescale-wasm-plugin/pkg/proto/query"
 	"github.com/xwb1989/sqlparser"
 )
 
 func main() {
-	internal.SetWasmPlugin(&ParserWasmPlugin{})
+	pkg.SetWasmPlugin(&ParserWasmPlugin{})
 }
 
 type ParserWasmPlugin struct {

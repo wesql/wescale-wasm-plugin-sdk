@@ -2,12 +2,12 @@ package main
 
 import (
 	"bytes"
-	"github.com/wesql/wescale-wasm-plugin/internal"
-	"github.com/wesql/wescale-wasm-plugin/internal/proto/query"
+	"github.com/wesql/wescale-wasm-plugin/pkg"
+	"github.com/wesql/wescale-wasm-plugin/pkg/proto/query"
 )
 
 func main() {
-	internal.SetWasmPlugin(&DataMaskingWasmPlugin{})
+	pkg.SetWasmPlugin(&DataMaskingWasmPlugin{})
 }
 
 type DataMaskingWasmPlugin struct {

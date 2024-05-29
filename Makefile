@@ -33,7 +33,7 @@ $(PROTO_GO_OUTS): minimaltools install_protoc-gen-go proto/*.proto
 
 build-tools:
 	mkdir -p bin
-	go build -o ./bin/wescale_wasm ./tools/wescale_wasm/main.go
+	go build -o ./bin/wescale_wasm ./cmd/wescale_wasm/main.go
 
 build-examples:
 	# Iterate over all the examples and build them

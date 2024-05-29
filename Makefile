@@ -4,33 +4,6 @@ endif
 
 export WESCALEROOTBIN=${WESCALEROOT}/bin
 
-
-build-scripts:
-	mkdir -p bin
-	go build -o ./bin/wescale_wasm ./tools/wescale_wasm/main.go
-
-build-wazero:
-	mkdir -p bin
-	tinygo build --no-debug -o ./bin/myguest.wasm -target=wasi -scheduler=none ./internal/wazero/wazero_main.go
-
-########################################################################################################
-
-reborn: clean build uninstall install
-
-clean:
-	rm -f ./bin/*
-	rm -rf ./dist/*
-
-build: build-wazero build-scripts
-
-install: build
-	./bin/wescale_wasm --command=install --wasm_file=./bin/myguest.wasm
-
-uninstall:
-	./bin/wescale_wasm --command=uninstall
-
-
-
 minimaltools:
 	echo $$(date): Installing minimal dependencies
 	BUILD_CHROME=0 BUILD_JAVA=0 BUILD_CONSUL=0 ./tools/bootstrap.sh
@@ -54,6 +27,37 @@ $(PROTO_GO_OUTS): minimaltools install_protoc-gen-go proto/*.proto
 		--go-vtproto_opt=features=marshal+unmarshal+size+pool \
 		--go-vtproto_opt=pool=internal/proto/query/query.Row \
 		-I${PWD}/dist/vt-protoc-21.3/include:proto $(PROTO_SRCS)
+
+
+########################################################################################################
+
+build-tools:
+	mkdir -p bin
+	go build -o ./bin/wescale_wasm ./tools/wescale_wasm/main.go
+
+build-examples:
+	# Iterate over all the examples and build them
+	for example in $(shell ls ./examples); do \
+		echo "Building example: $$example"; \
+		tinygo build --no-debug -o ./bin/$$example.wasm -target=wasi -scheduler=none ./examples/$$example/main.go; \
+	done
+
+########################################################################################################
+
+reborn: clean build uninstall install
+
+clean:
+	rm -f ./bin/*
+	rm -rf ./dist/*
+
+build: clean build-tools build-examples
+
+install:
+	./bin/wescale_wasm --command=install --wasm_file=./bin/auditlog.wasm
+
+uninstall:
+	./bin/wescale_wasm --command=uninstall
+
 
 
 

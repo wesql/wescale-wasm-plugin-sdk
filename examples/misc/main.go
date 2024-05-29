@@ -1,20 +1,27 @@
-package wescale_wasm_plugin_template
+package main
 
 import (
 	"errors"
 	"fmt"
 	"github.com/wesql/wescale-wasm-plugin-template/internal"
-	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions"
+	hostfunction "github.com/wesql/wescale-wasm-plugin-template/internal/host_functions/v1alpha1"
 	"github.com/wesql/wescale-wasm-plugin-template/internal/proto/query"
 	"strconv"
 )
 
-func RunBeforeExecution() error {
+func main() {
+	internal.SetWasmPlugin(&MiscWasmPlugin{})
+}
+
+type MiscWasmPlugin struct {
+}
+
+func (a *MiscWasmPlugin) RunBeforeExecution() error {
 	// TODO: Write your code here
 	hostfunction.GlobalLock()
 	var moduleCount int
 	countBytes, err := hostfunction.GetModuleValueByKey("moduleCount")
-	if errors.Is(err, internal.ErrorStatusNotFound) {
+	if errors.Is(err, hostfunction.ErrorStatusNotFound) {
 		moduleCount = 0
 		hostfunction.SetModuleValueByKey("moduleCount", []byte(strconv.Itoa(moduleCount)))
 	}
@@ -44,7 +51,7 @@ func RunBeforeExecution() error {
 	return nil
 }
 
-func RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error) {
+func (a *MiscWasmPlugin) RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error) {
 	// TODO: Write your code here
 	// you should know that the queryResult can be nil
 

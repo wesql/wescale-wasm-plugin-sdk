@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"strings"
 )
 
 var (
@@ -28,19 +29,18 @@ var (
 
 // wasm config
 var (
-	wasmFile = "./bin/myguest.wasm"
-	//wasmName              = "test"
+	wasmFile              = "./bin/myguest.wasm"
 	wasmRuntime           = "wazero"
 	wasmCompressAlgorithm = "bzip2"
 )
 
 // filter config
 var (
-	filterName                     = "wasm"
-	filterDesc                     = "wasm test"
-	filterPriority                 = "999"
+	filterName                     = ""
+	filterDesc                     = ""
+	filterPriority                 = "1000"
 	filterStatus                   = "ACTIVE"
-	filterPlans                    = ""
+	filterPlans                    = "Select,Insert,Update,Delete"
 	filterFullyQualifiedTableNames = ""
 	filterQueryRegex               = ``
 	filterQueryTemplate            = ""
@@ -49,7 +49,7 @@ var (
 	filterLeadingCommentRegex      = ``
 	filterTrailingCommentRegex     = ``
 	filterBindVarConds             = ""
-	filterAction                   = "wasm_plugin" // todo remove
+	filterAction                   = "wasm_plugin"
 )
 
 const createFilterTemplate = `create filter if not exists %s (
@@ -102,6 +102,8 @@ func init() {
 	pflag.StringVar(&filterAction, "filter_action", filterAction, "the filter_action of filter")
 
 	pflag.Parse()
+
+	generateFilterName()
 }
 
 func main() {
@@ -257,4 +259,10 @@ func getWasmFileName() string {
 	// Get the file name from wasmFile
 	fileName := filepath.Base(wasmFile)
 	return fileName
+}
+
+func generateFilterName() {
+	if filterName == "" {
+		filterName = strings.ReplaceAll(getWasmFileName(), ".", "_") + "_filter"
+	}
 }

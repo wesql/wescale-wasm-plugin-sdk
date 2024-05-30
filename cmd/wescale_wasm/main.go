@@ -5,6 +5,7 @@ import (
 	"crypto/md5"
 	"database/sql"
 	"fmt"
+	"github.com/BurntSushi/toml"
 	"github.com/dsnet/compress/bzip2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/spf13/pflag"
@@ -29,7 +30,7 @@ var (
 
 // wasm config
 var (
-	wasmFile              = "./bin/myguest.wasm"
+	wasmFile              = ""
 	wasmRuntime           = "wazero"
 	wasmCompressAlgorithm = "bzip2"
 )
@@ -174,14 +175,14 @@ func install() {
 }
 
 func uninstall() {
-	dropFilterSQL := fmt.Sprintf("drop filter %s", filterName)
-	deleteWasmSQL := fmt.Sprintf("delete from mysql.wasm_binary where name='%s'", getWasmFileName())
-
 	db, err := sql.Open("mysql", generateMysqlDsn())
 	if err != nil {
 		panic(err.Error())
 	}
 	defer db.Close()
+
+	dropFilterSQL := fmt.Sprintf("drop filter %s", filterName)
+	deleteWasmSQL := fmt.Sprintf("delete from mysql.wasm_binary where name='%s'", getWasmFileNameFromFilter(db))
 
 	if err := db.Ping(); err != nil {
 		panic("database can't connect")
@@ -195,6 +196,8 @@ func uninstall() {
 		}
 		if affected, _ := r.RowsAffected(); affected == 0 {
 			fmt.Printf("filter %s not found\n", filterName)
+		} else {
+			fmt.Printf("filter %s deleted\n", filterName)
 		}
 	}
 
@@ -205,6 +208,8 @@ func uninstall() {
 		}
 		if affected, _ := r.RowsAffected(); affected == 0 {
 			fmt.Printf("wasm %s not found\n", getWasmFileName())
+		} else {
+			fmt.Printf("wasm %s deleted\n", getWasmFileName())
 		}
 	}
 }
@@ -259,6 +264,85 @@ func getWasmFileName() string {
 	// Get the file name from wasmFile
 	fileName := filepath.Base(wasmFile)
 	return fileName
+}
+
+func getWasmFileNameFromFilter(db *sql.DB) string {
+	type Row struct {
+		Id                       int
+		CreateTimestamp          string
+		UpdateTimestamp          string
+		Name                     string
+		Description              string
+		Priority                 int
+		Status                   string
+		Plans                    string
+		FullyQualifiedTableNames string
+		QueryRegex               string
+		QueryTemplate            string
+		RequestIpRegex           string
+		UserRegex                string
+		LeadingCommentRegex      string
+		TrailingCommentRegex     string
+		BindVarConds             string
+		Action                   string
+		ActionArgs               string
+	}
+
+	query := fmt.Sprintf("show filter %s", filterName)
+	r, err := db.Query(query)
+	if err != nil {
+		panic(err.Error())
+	}
+	defer r.Close()
+
+	var row Row
+	if r.Next() {
+		if err := r.Scan(&row.Id, &row.CreateTimestamp, &row.UpdateTimestamp, &row.Name, &row.Description,
+			&row.Priority, &row.Status, &row.Plans, &row.FullyQualifiedTableNames, &row.QueryRegex, &row.QueryTemplate,
+			&row.RequestIpRegex, &row.UserRegex, &row.LeadingCommentRegex, &row.TrailingCommentRegex, &row.BindVarConds,
+			&row.Action, &row.ActionArgs); err != nil {
+			panic(err.Error())
+		}
+	} else {
+		panic("filter %s not found when uninstalling wasm plugin\n")
+	}
+
+	return getWasmFileNameFromActionArgs(row.ActionArgs)
+}
+
+func getWasmFileNameFromActionArgs(actionArgs string) string {
+	type WasmPluginActionArgs struct {
+		WasmBinaryName string `toml:"wasm_binary_name"`
+	}
+
+	var result strings.Builder
+	insideQuotes := false
+
+	for _, char := range actionArgs {
+		if char == '"' {
+			insideQuotes = !insideQuotes
+		}
+		if char == ';' && !insideQuotes {
+			result.WriteString("\n")
+		} else {
+			result.WriteRune(char)
+		}
+	}
+	userInputTOML := result.String()
+
+	w := &WasmPluginActionArgs{}
+
+	err := toml.Unmarshal([]byte(userInputTOML), w)
+	if err != nil {
+		panic(fmt.Sprintf("error when parsing wasm plugin action args: %v", err))
+	}
+	if w.WasmBinaryName == "" {
+		panic("wasm binary name is empty")
+	}
+
+	wasmFile = w.WasmBinaryName
+
+	return w.WasmBinaryName
 }
 
 func generateFilterName(filterName, wasmFileName string) string {

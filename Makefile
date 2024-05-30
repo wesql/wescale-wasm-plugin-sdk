@@ -35,7 +35,7 @@ build-tools:
 	mkdir -p bin
 	go build -o ./bin/wescale_wasm ./cmd/wescale_wasm/main.go
 
-VERSION := 'v0.1.1'
+VERSION := 'v0.1.2-beta3'
 PLATFORMS := darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64
 SOURCE_DIR := ./cmd/wescale_wasm
 BINARY_NAME := wescale_wasm

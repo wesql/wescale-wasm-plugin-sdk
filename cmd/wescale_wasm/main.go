@@ -164,6 +164,7 @@ func install() {
 	insertIntoWasmBinary(db, getWasmFileName(), wasmRuntime, wasmCompressAlgorithm, wasmBytes, hash)
 
 	query := generateFilterSQL()
+	fmt.Println(query)
 	_, err = db.Query(query)
 	if err != nil {
 		panic(err.Error())

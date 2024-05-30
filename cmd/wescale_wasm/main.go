@@ -103,7 +103,7 @@ func init() {
 
 	pflag.Parse()
 
-	generateFilterName()
+	filterName = generateFilterName(filterName, getWasmFileName())
 }
 
 func main() {
@@ -261,8 +261,12 @@ func getWasmFileName() string {
 	return fileName
 }
 
-func generateFilterName() {
-	if filterName == "" {
-		filterName = strings.ReplaceAll(getWasmFileName(), ".", "_") + "_filter"
+func generateFilterName(filterName, wasmFileName string) string {
+	if wasmFileName == "" {
+		return filterName
 	}
+	if filterName == "" {
+		filterName = strings.ReplaceAll(wasmFileName, ".", "_") + "_filter"
+	}
+	return filterName
 }

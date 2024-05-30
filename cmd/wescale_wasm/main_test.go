@@ -23,9 +23,7 @@ func Test_generateFilterName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.wasmName, func(t *testing.T) {
-			wasmFile = tt.wasmName
-			generateFilterName()
-			assert.Equal(t, tt.expect, filterName)
+			assert.Equal(t, tt.expect, generateFilterName("", tt.wasmName))
 		})
 	}
 }

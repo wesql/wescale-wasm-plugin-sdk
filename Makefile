@@ -31,17 +31,13 @@ $(PROTO_GO_OUTS): minimaltools install_protoc-gen-go proto/*.proto
 
 ########################################################################################################
 
-build-tools:
-	mkdir -p bin
-	go build -o ./bin/wescale_wasm ./cmd/wescale_wasm/main.go
-
-VERSION := 'v0.1.2-beta3'
+VERSION := 'v0.1.2'
 PLATFORMS := darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64
 SOURCE_DIR := ./cmd/wescale_wasm
 BINARY_NAME := wescale_wasm
 TARGET_DIR := ./bin
 
-cross-build-tools:
+build:
 	@for platform in $(PLATFORMS); do \
 		platform_split=($${platform//\// }); \
 		GOOS=$${platform_split[0]}; \
@@ -59,31 +55,7 @@ cross-build-tools:
 		fi; \
 	done
 
-########################################################################################################
-
-build-examples:
-	# Iterate over all the examples and build them
-	for example in $(shell ls ./examples); do \
-		echo "Building example: $$example"; \
-		tinygo build --no-debug -o ./bin/$$example.wasm -target=wasi -scheduler=none ./examples/$$example/main.go; \
-	done
-
-########################################################################################################
-
-reborn: clean build uninstall install
-
 clean:
 	rm -f ./bin/*
-	rm -rf ./dist/*
-
-build: clean build-tools build-examples
-
-install:
-	./bin/wescale_wasm --command=install --wasm_file=./bin/datamasking.wasm
-
-uninstall:
-	./bin/wescale_wasm --command=uninstall
-
-
 
 

@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/pflag"
 	"io/ioutil"
 	"log"
+	"path/filepath"
 )
 
 var (
@@ -27,8 +28,8 @@ var (
 
 // wasm config
 var (
-	wasmFile              = "./bin/myguest.wasm"
-	wasmName              = "test"
+	wasmFile = "./bin/myguest.wasm"
+	//wasmName              = "test"
 	wasmRuntime           = "wazero"
 	wasmCompressAlgorithm = "bzip2"
 )
@@ -51,20 +52,26 @@ var (
 	filterAction                   = "wasm_plugin" // todo remove
 )
 
-func CompressByBZip2(originalData []byte) []byte {
-	var buf bytes.Buffer
-	w, err := bzip2.NewWriter(&buf, &bzip2.WriterConfig{Level: bzip2.BestCompression})
-	if err != nil {
-		log.Fatal(err)
-	}
-	if _, err := w.Write(originalData); err != nil {
-		log.Fatal(err)
-	}
-	if err := w.Close(); err != nil {
-		log.Fatal(err)
-	}
-	return buf.Bytes()
-}
+const createFilterTemplate = `create filter if not exists %s (
+	desc='%s',
+	priority='%s',
+	status='%s'
+)
+with_pattern(
+	plans='%s',
+	fully_qualified_table_names='%s',
+	query_regex='%s',
+	query_template='%s',
+	request_ip_regex='%s',
+	user_regex='%s',
+	leading_comment_regex='%s',
+	trailing_comment_regex='%s',
+	bind_var_conds='%s'
+)
+execute(
+	action='%s',
+	action_args='%s'
+);`
 
 func init() {
 	pflag.StringVar(&command, "command", command, "the command of the script. default is install")
@@ -76,7 +83,6 @@ func init() {
 	pflag.StringVar(&mysqlDb, "mysql_db", mysqlDb, "the db of mysql")
 
 	pflag.StringVar(&wasmFile, "wasm_file", wasmFile, "the wasmFile of wasm file")
-	pflag.StringVar(&wasmName, "wasm_name", wasmName, "the wasmName of wasm")
 	pflag.StringVar(&wasmRuntime, "wasm_runtime", wasmRuntime, "the wasm_runtime of wasm")
 	pflag.StringVar(&wasmCompressAlgorithm, "wasm_compress_algorithm", wasmCompressAlgorithm, "the wasm_compress_algorithm of wasm")
 
@@ -107,9 +113,24 @@ func main() {
 	}
 }
 
-func calcMd5String32(data []byte) string {
-	hash := md5.Sum(data)
-	return fmt.Sprintf("%x", hash)
+func generateFilterSQL() string {
+	return fmt.Sprintf(createFilterTemplate,
+		filterName,
+		filterDesc,
+		filterPriority,
+		filterStatus,
+		filterPlans,
+		filterFullyQualifiedTableNames,
+		filterQueryRegex,
+		filterQueryTemplate,
+		filterRequestIpRegex,
+		filterUserRegex,
+		filterLeadingCommentRegex,
+		filterTrailingCommentRegex,
+		filterBindVarConds,
+		filterAction,
+		fmt.Sprintf("wasm_binary_name=\"%v\"", getWasmFileName()),
+	)
 }
 
 func install() {
@@ -140,47 +161,9 @@ func install() {
 	}
 	fmt.Println("database connected")
 
-	insertIntoWasmBinary(db, wasmName, wasmRuntime, wasmCompressAlgorithm, wasmBytes, hash)
+	insertIntoWasmBinary(db, getWasmFileName(), wasmRuntime, wasmCompressAlgorithm, wasmBytes, hash)
 
-	createFilterTemplate := `create filter if not exists %s (
-	  desc='%s',
-	  priority='%s',
-	  status='%s'
-		)
-		with_pattern(
-				plans='%s',
-				fully_qualified_table_names='%s',
-				query_regex='%s',
-				query_template='%s',
-				request_ip_regex='%s',
-				user_regex='%s',
-				leading_comment_regex='%s',
-				trailing_comment_regex='%s',
-				bind_var_conds='%s'
-		)
-		execute(
-				action='%s',
-				action_args='%s'
-		);`
-
-	actionArgs := fmt.Sprintf("wasm_binary_name=\"%v\"", wasmName)
-	query := fmt.Sprintf(createFilterTemplate,
-		filterName,
-		filterDesc,
-		filterPriority,
-		filterStatus,
-		filterPlans,
-		filterFullyQualifiedTableNames,
-		filterQueryRegex,
-		filterQueryTemplate,
-		filterRequestIpRegex,
-		filterUserRegex,
-		filterLeadingCommentRegex,
-		filterTrailingCommentRegex,
-		filterBindVarConds,
-		filterAction,
-		actionArgs)
-
+	query := generateFilterSQL()
 	_, err = db.Query(query)
 	if err != nil {
 		panic(err.Error())
@@ -189,7 +172,7 @@ func install() {
 
 func uninstall() {
 	dropFilterSQL := fmt.Sprintf("drop filter %s", filterName)
-	deleteWasmSQL := fmt.Sprintf("delete from mysql.wasm_binary where name='%s'", wasmName)
+	deleteWasmSQL := fmt.Sprintf("delete from mysql.wasm_binary where name='%s'", getWasmFileName())
 
 	db, err := sql.Open("mysql", generateMysqlDsn())
 	if err != nil {
@@ -218,7 +201,7 @@ func uninstall() {
 			panic(err.Error())
 		}
 		if affected, _ := r.RowsAffected(); affected == 0 {
-			fmt.Printf("wasm %s not found\n", wasmName)
+			fmt.Printf("wasm %s not found\n", getWasmFileName())
 		}
 	}
 }
@@ -241,4 +224,36 @@ func insertIntoWasmBinary(db *sql.DB, wasmName, wasmRuntime, wasmCompressAlgorit
 func generateMysqlDsn() string {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s", mysqlUser, mysqlPassword, mysqlHost, mysqlPort, mysqlDb)
 	return dsn
+}
+
+func CompressByBZip2(originalData []byte) []byte {
+	var buf bytes.Buffer
+	w, err := bzip2.NewWriter(&buf, &bzip2.WriterConfig{Level: bzip2.BestCompression})
+	if err != nil {
+		log.Fatal(err)
+	}
+	if _, err := w.Write(originalData); err != nil {
+		log.Fatal(err)
+	}
+	if err := w.Close(); err != nil {
+		log.Fatal(err)
+	}
+	return buf.Bytes()
+}
+
+func calcMd5String32(data []byte) string {
+	hash := md5.Sum(data)
+	return fmt.Sprintf("%x", hash)
+}
+
+func getWasmFilePath() string {
+	// Get the directory path from wasmFile
+	dirPath := filepath.Dir(wasmFile)
+	return dirPath
+}
+
+func getWasmFileName() string {
+	// Get the file name from wasmFile
+	fileName := filepath.Base(wasmFile)
+	return fileName
 }

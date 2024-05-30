@@ -1,4 +1,4 @@
-# wescake-wasm-plugin-sdk
+# wescale-wasm-plugin-sdk
 
 This repository contains:
 * the SDK for writing WeScale Wasm plugins.

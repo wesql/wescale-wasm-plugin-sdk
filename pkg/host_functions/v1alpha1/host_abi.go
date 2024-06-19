@@ -1,34 +1,22 @@
 package v1alpha1
 
-//export GetGlobalValueByKeyOnHost
-func getGlobalValueByKeyOnHost(keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) Status
+//export GetValueByKeyOnHost
+func getValueByKeyOnHost(scope uint32, hostModulePtr uint64, keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) Status
 
-//export SetGlobalValueByKeyOnHost
-func setGlobalValueByKeyOnHost(keyPtr, keySize, valuePtr, valueSize uint32) Status
+//export SetValueByKeyOnHost
+func setValueByKeyOnHost(scope uint32, hostModulePtr uint64, keyPtr, keySize, valuePtr, valueSize uint32) Status
 
-//export GetModuleValueByKeyOnHost
-func getModuleValueByKeyOnHost(hostModulePtr uint64, keyPtr, keySize uint32, returnValuePtr, returnValueSize *uint32) Status
+//export LockOnHost
+func lockOnHost(scope uint32, hostModulePtr uint64)
 
-//export SetModuleValueByKeyOnHost
-func setModuleValueByKeyOnHost(hostModulePtr uint64, keyPtr, keySize, valuePtr, valueSize uint32) Status
+//export UnlockOnHost
+func unlockOnHost(scope uint32, hostModulePtr uint64)
 
 //export GetQueryOnHost
 func getQueryOnHost(hostInstancePtr uint64, returnValueData *uint32, returnValueSize *uint32) Status
 
 //export SetQueryOnHost
 func setQueryOnHost(hostInstancePtr uint64, queryValuePtr uint32, queryValueSize uint32) Status
-
-//export GlobalLockOnHost
-func globalLockOnHost()
-
-//export GlobalUnlockOnHost
-func globalUnlockOnHost()
-
-//export ModuleLockOnHost
-func moduleLockOnHost(hostModulePtr uint64)
-
-//export ModuleUnlockOnHost
-func moduleUnlockOnHost(hostModulePtr uint64)
 
 //export GetAbiVersionOnHost
 func getAbiVersionOnHost(returnValuePtr *uint32, returnValueSize *uint32) Status

@@ -5,6 +5,8 @@ This repository contains:
 * the `wescale_wasm` binary to deploy the plugin.
 
 ## How to release a new version of the SDK
+You can use `./release_new_version.sh` to help you.
+
 The SDK is released as a Go module. To release a new version of the SDK, you need to do the following:
 
 1. Make sure you have the latest changes in the `main` branch.
@@ -19,6 +21,8 @@ git push origin v1.0.0
 
 
 ## How to release a new version of the `wescale_wasm` binary
+You can use `./release_new_version.sh` to help you.
+
 If you've made changes to the `cmd/wescale_wasm` directory, you need to release a new version of the `wescale_wasm` binary. You can do this by following the steps below:
 
 1. Make sure you have the latest changes in the `main` branch.

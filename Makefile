@@ -31,7 +31,7 @@ $(PROTO_GO_OUTS): minimaltools install_protoc-gen-go proto/*.proto
 
 ########################################################################################################
 
-VERSION := 'v0.1.2'
+VERSION := 'v0.1.3'
 PLATFORMS := darwin/amd64 darwin/arm64 linux/386 linux/amd64 linux/arm linux/arm64 windows/386 windows/amd64
 SOURCE_DIR := ./cmd/wescale_wasm
 BINARY_NAME := wescale_wasm

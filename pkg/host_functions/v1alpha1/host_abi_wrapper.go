@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"errors"
-	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/proto/query"
+	"github.com/earayu/sqlparser/go/vt/proto/query"
 )
 
 var HostInstancePtr uint64

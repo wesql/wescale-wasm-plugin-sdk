@@ -9,6 +9,7 @@ github.com/dsnet/compress v0.0.1/go.mod h1:Aw8dCMJ7RioblQeTqt88akK31OvO8Dhf5Jflh
 github.com/dsnet/golib v0.0.0-20171103203638-1ea166775780/go.mod h1:Lj+Z9rebOhdfkVLjJ8T6VcRQv3SXugXy999NBtR9aFY=
 github.com/earayu/sqlparser v0.1.2 h1:ePcaByXGQvOMFm2HLRDDQthkWZi62sxb4nQ76NO9pig=
 github.com/earayu/sqlparser v0.1.2/go.mod h1:uAqQbPtMdmvv8wdmfRbe2mZLx5iPvQ4huqKXdwdmp3I=
+github.com/earayu/sqlparser v0.1.3/go.mod h1:YUcROekqfBWOp0gTlAbc/Maqx0iB49D9QrE4kJKKu9k=
 github.com/go-sql-driver/mysql v1.8.1 h1:LedoTUt/eveggdHS9qUFC1EFSa8bU2+1pZjSRpvNJ1Y=
 github.com/go-sql-driver/mysql v1.8.1/go.mod h1:wEBSXgmK//2ZFJyE+qWnIsVGmvmEKlqwuVSjsCm7DZg=
 github.com/google/go-cmp v0.6.0 h1:ofyhxvXcZhMsU5ulbFiLKl/XBFqE1GSq7atu8tAmTRI=

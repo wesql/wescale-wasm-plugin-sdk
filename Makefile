@@ -3,7 +3,7 @@ export WESCALEROOT=${PWD}
 endif
 
 export WESCALEROOTBIN=${WESCALEROOT}/bin
-export WASM_PLUGIN_SDK_VERSION=0.1.8
+export WASM_PLUGIN_SDK_VERSION=0.1.9
 
 ########################################################################################################
 

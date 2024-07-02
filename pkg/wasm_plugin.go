@@ -2,7 +2,7 @@ package pkg
 
 import (
 	"errors"
-	"github.com/earayu/sqlparser/go/vt/proto/query"
+	"github.com/wesql/sqlparser/go/vt/proto/query"
 	hostfunction "github.com/wesql/wescale-wasm-plugin-sdk/pkg/host_functions/v1alpha1"
 )
 

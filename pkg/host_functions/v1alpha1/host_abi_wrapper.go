@@ -2,7 +2,7 @@ package v1alpha1
 
 import (
 	"errors"
-	"github.com/earayu/sqlparser/go/vt/proto/query"
+	"github.com/wesql/sqlparser/go/vt/proto/query"
 )
 
 var HostInstancePtr uint64

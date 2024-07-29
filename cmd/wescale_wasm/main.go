@@ -36,6 +36,7 @@ var (
 )
 
 // filter config
+var skipFilter = false
 var (
 	filterName                     = ""
 	filterDesc                     = ""
@@ -87,6 +88,7 @@ func init() {
 	pflag.StringVar(&wasmRuntime, "wasm_runtime", wasmRuntime, "the wasm_runtime of wasm")
 	pflag.StringVar(&wasmCompressAlgorithm, "wasm_compress_algorithm", wasmCompressAlgorithm, "the wasm_compress_algorithm of wasm")
 
+	pflag.BoolVar(&skipFilter, "skip_filter", false, "skip filter creation")
 	pflag.StringVar(&filterName, "filter_name", filterName, "the filter_name of filter")
 	pflag.StringVar(&filterDesc, "filter_desc", filterDesc, "the filter_desc of filter")
 	pflag.StringVar(&filterPriority, "filter_priority", filterPriority, "the filter_priority of filter")
@@ -110,9 +112,12 @@ func init() {
 func main() {
 	switch command {
 	case "install":
-		install()
+		InstallWasm()
+		if skipFilter {
+			InstallFilter()
+		}
 	case "uninstall":
-		uninstall()
+		UnInstall()
 	}
 }
 
@@ -136,7 +141,20 @@ func generateFilterSQL() string {
 	)
 }
 
-func install() {
+func getDB() *sql.DB {
+	db, err := sql.Open("mysql", generateMysqlDsn())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("database connected")
+	return db
+}
+
+func InstallWasm() {
 	wasmBytes, err := ioutil.ReadFile(wasmFile)
 	if err != nil {
 		log.Panicf("error when reading wasm bytes: %v", err)
@@ -153,28 +171,38 @@ func install() {
 	fmt.Printf("bytes num is %d\n", len(wasmBytes))
 	fmt.Printf("last 5 bytes is %v %v %v %v %v\n", wasmBytes[len(wasmBytes)-5], wasmBytes[len(wasmBytes)-4], wasmBytes[len(wasmBytes)-3], wasmBytes[len(wasmBytes)-2], wasmBytes[len(wasmBytes)-1])
 
-	db, err := sql.Open("mysql", generateMysqlDsn())
-	if err != nil {
-		panic(err.Error())
-	}
+	db := getDB()
 	defer db.Close()
 
-	if err := db.Ping(); err != nil {
-		panic("database can't connect")
-	}
-	fmt.Println("database connected")
-
 	insertIntoWasmBinary(db, getWasmFileName(), wasmRuntime, wasmCompressAlgorithm, wasmBytes, hash)
+}
+
+func InstallFilter() {
+	db := getDB()
+	defer db.Close()
 
 	query := generateFilterSQL()
 	fmt.Println(query)
-	_, err = db.Query(query)
+	_, err := db.Query(query)
 	if err != nil {
-		panic(err.Error())
+		log.Fatal(err)
 	}
 }
 
-func uninstall() {
+func InstallCdc() {
+	db := getDB()
+	defer db.Close()
+
+	//todo
+	query := "insert into mysql.cdc_consumer ......"
+	fmt.Println(query)
+	_, err := db.Query(query)
+	if err != nil {
+		log.Fatal(err)
+	}
+}
+
+func UnInstall() {
 	db, err := sql.Open("mysql", generateMysqlDsn())
 	if err != nil {
 		panic(err.Error())

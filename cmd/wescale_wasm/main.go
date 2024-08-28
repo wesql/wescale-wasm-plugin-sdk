@@ -88,7 +88,7 @@ func init() {
 	pflag.StringVar(&wasmRuntime, "wasm_runtime", wasmRuntime, "the wasm_runtime of wasm")
 	pflag.StringVar(&wasmCompressAlgorithm, "wasm_compress_algorithm", wasmCompressAlgorithm, "the wasm_compress_algorithm of wasm")
 
-	pflag.BoolVar(&createFilter, "skip_filter", false, "skip filter creation")
+	pflag.BoolVar(&createFilter, "create_filter", false, "skip filter creation")
 	pflag.StringVar(&filterName, "filter_name", filterName, "the filter_name of filter")
 	pflag.StringVar(&filterDesc, "filter_desc", filterDesc, "the filter_desc of filter")
 	pflag.StringVar(&filterPriority, "filter_priority", filterPriority, "the filter_priority of filter")

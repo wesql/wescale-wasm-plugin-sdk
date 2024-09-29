@@ -104,6 +104,8 @@ func init() {
 	pflag.StringVar(&filterBindVarConds, "filter_bind_var_conds", filterBindVarConds, "the filter_bind_var_conds of filter")
 	pflag.StringVar(&filterAction, "filter_action", filterAction, "the filter_action of filter")
 
+	//todo add flag: drop_filter
+
 	pflag.Parse()
 
 	filterName = generateFilterName(filterName, getWasmFileName())

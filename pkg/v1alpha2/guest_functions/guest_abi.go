@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/wesql/sqlparser/go/vt/proto/query"
 	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/types"
-	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/v1alpha2/host_functions"
 )
 
 type WasmPlugin interface {
@@ -25,24 +24,24 @@ func RunBeforeExecutionOnGuest(hostInstancePtr, hostModulePtr uint64) {
 
 	err := types.CurrentWasmPlugin.RunBeforeExecution()
 	if err != nil {
-		host_functions.SetErrorMessage(err.Error())
+		setErrorMessage(err.Error())
 	}
 }
 
 //export RunAfterExecutionOnGuest
 func RunAfterExecutionOnGuest() {
-	qr, err := host_functions.GetQueryResult()
+	qr, err := getQueryResult()
 	if err != nil && !errors.Is(err, types.StatusToError(types.StatusBadArgument)) {
 		// unknown error
-		host_functions.SetErrorMessage(err.Error())
+		setErrorMessage(err.Error())
 		return
 	}
 
-	errMessageBefore, err := host_functions.GetErrorMessage()
+	errMessageBefore, err := getErrorMessage()
 	if err != nil {
 		if !errors.Is(err, types.StatusToError(types.StatusBadArgument)) {
 			// unknown error
-			host_functions.SetErrorMessage(err.Error())
+			setErrorMessage(err.Error())
 			return
 		} else {
 			errMessageBefore = ""
@@ -56,8 +55,10 @@ func RunAfterExecutionOnGuest() {
 
 	finalQueryResult, finalErr := types.CurrentWasmPlugin.RunAfterExecution(qr, errBefore)
 
-	host_functions.SetQueryResult(finalQueryResult)
+	setQueryResult(finalQueryResult)
 	if finalErr != nil {
-		host_functions.SetErrorMessage(finalErr.Error())
+		setErrorMessage(finalErr.Error())
+	} else {
+		setErrorMessage("")
 	}
 }

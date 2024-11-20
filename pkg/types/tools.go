@@ -18,7 +18,7 @@ func PtrToBytes(ptr uint32, size uint32) []byte {
 //func PtrToStringAndFree(ptr uint32, size uint32) string {
 //	temp := unsafe.String((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 //	result := string(temp)
-//	free(ptr) // 必须释放，否则会泄漏
+//	free(ptr)
 //	return result
 //}
 //
@@ -26,7 +26,7 @@ func PtrToBytes(ptr uint32, size uint32) []byte {
 //	temp := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 //	result := make([]byte, size)
 //	copy(result, temp)
-//	free(ptr) // 必须释放，否则会泄漏
+//	free(ptr)
 //	return result
 //}
 

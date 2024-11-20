@@ -20,7 +20,6 @@ func (a *ParserWasmPlugin) RunBeforeExecution() error {
 	if err != nil {
 		return err
 	}
-
 	stmt, err := sqlparser.Parse(query)
 	if err != nil {
 		hostfunction.InfoLog("parse error: " + err.Error())
@@ -43,5 +42,5 @@ func (a *ParserWasmPlugin) RunBeforeExecution() error {
 
 func (a *ParserWasmPlugin) RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error) {
 	// do nothing
-	return queryResult, errBefore
+	return queryResult, nil
 }

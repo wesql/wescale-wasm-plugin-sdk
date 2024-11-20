@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	pkg.SetWasmPlugin(&ParserWasmPlugin{})
+	pkg.InitWasmPlugin(&ParserWasmPlugin{})
 }
 
 type ParserWasmPlugin struct {

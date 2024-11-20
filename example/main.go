@@ -16,13 +16,6 @@ type ParserWasmPlugin struct {
 }
 
 func (a *ParserWasmPlugin) RunBeforeExecution() error {
-	for i := 0; i < 10000; i++ {
-		q, err := hostfunction.GetHostQuery()
-		if err != nil {
-			hostfunction.ErrorLog(err.Error())
-		}
-		hostfunction.InfoLog("receive query:" + q)
-	}
 	query, err := hostfunction.GetHostQuery()
 	if err != nil {
 		return err

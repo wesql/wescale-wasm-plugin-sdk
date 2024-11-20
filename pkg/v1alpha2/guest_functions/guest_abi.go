@@ -1,7 +1,8 @@
-package v1alpha2
+package guest_functions
 
 import (
 	"errors"
+	"github.com/wesql/wescale-wasm-plugin-sdk/pkg"
 	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/v1alpha2/host_functions"
 )
 
@@ -13,10 +14,10 @@ func proxyOnMemoryAllocate(size uint) *byte {
 
 //export RunBeforeExecutionOnGuest
 func RunBeforeExecutionOnGuest(hostInstancePtr, hostModulePtr uint64) {
-	host_functions.HostInstancePtr = hostInstancePtr
-	host_functions.HostModulePtr = hostModulePtr
+	pkg.CurrentWasmPluginContext.HostInstancePtr = hostInstancePtr
+	pkg.CurrentWasmPluginContext.HostModulePtr = hostModulePtr
 
-	err := wasmPlugin.RunBeforeExecution()
+	err := pkg.CurrentWasmPlugin.RunBeforeExecution()
 	if err != nil {
 		host_functions.SetErrorMessage(err.Error())
 	}
@@ -25,7 +26,7 @@ func RunBeforeExecutionOnGuest(hostInstancePtr, hostModulePtr uint64) {
 //export RunAfterExecutionOnGuest
 func RunAfterExecutionOnGuest() {
 	qr, err := host_functions.GetQueryResult()
-	if err != nil && !errors.Is(err, StatusToError(StatusBadArgument)) {
+	if err != nil && !errors.Is(err, pkg.StatusToError(pkg.StatusBadArgument)) {
 		// unknown error
 		host_functions.SetErrorMessage(err.Error())
 		return
@@ -33,7 +34,7 @@ func RunAfterExecutionOnGuest() {
 
 	errMessageBefore, err := host_functions.GetErrorMessage()
 	if err != nil {
-		if !errors.Is(err, StatusToError(StatusBadArgument)) {
+		if !errors.Is(err, pkg.StatusToError(pkg.StatusBadArgument)) {
 			// unknown error
 			host_functions.SetErrorMessage(err.Error())
 			return
@@ -47,7 +48,7 @@ func RunAfterExecutionOnGuest() {
 		errBefore = errors.New(errMessageBefore)
 	}
 
-	finalQueryResult, finalErr := wasmPlugin.RunAfterExecution(qr, errBefore)
+	finalQueryResult, finalErr := pkg.CurrentWasmPlugin.RunAfterExecution(qr, errBefore)
 
 	host_functions.SetQueryResult(finalQueryResult)
 	if finalErr != nil {

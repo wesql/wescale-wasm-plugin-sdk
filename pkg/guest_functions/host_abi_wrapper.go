@@ -21,7 +21,7 @@ func getErrorMessage() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return types.PtrToString(ptr, retSize), nil
+	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
 func getQueryResult() (*query.QueryResult, error) {
@@ -32,7 +32,7 @@ func getQueryResult() (*query.QueryResult, error) {
 	if err != nil {
 		return nil, err
 	}
-	bytes := types.PtrToBytes(ptr, retSize)
+	bytes := types.PtrToBytesWithFree(ptr, retSize)
 	queryResult := &query.QueryResult{}
 	err = queryResult.UnmarshalVT(bytes)
 	if err != nil {

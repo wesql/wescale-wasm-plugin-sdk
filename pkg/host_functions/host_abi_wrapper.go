@@ -13,7 +13,7 @@ func GetHostQuery() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return types.PtrToString(ptr, retSize), nil
+	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
 func SetHostQuery(query string) error {
@@ -32,7 +32,7 @@ func GetAbiVersion() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return types.PtrToString(ptr, retSize), nil
+	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
 func GetRuntimeType() (string, error) {
@@ -43,7 +43,7 @@ func GetRuntimeType() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	return types.PtrToString(ptr, retSize), nil
+	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
 func InfoLog(message string) {

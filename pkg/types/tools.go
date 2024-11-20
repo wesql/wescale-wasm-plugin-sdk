@@ -12,23 +12,23 @@ func PtrToBytes(ptr uint32, size uint32) []byte {
 	return unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 }
 
-////export free
-//func free(ptr uint32)
-//
-//func PtrToStringAndFree(ptr uint32, size uint32) string {
-//	temp := unsafe.String((*byte)(unsafe.Pointer(uintptr(ptr))), size)
-//	result := string(temp)
-//	free(ptr)
-//	return result
-//}
-//
-//func PtrToBytesAndFree(ptr uint32, size uint32) []byte {
-//	temp := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
-//	result := make([]byte, size)
-//	copy(result, temp)
-//	free(ptr)
-//	return result
-//}
+//export free
+func free(ptr uint32)
+
+func PtrToStringWithFree(ptr uint32, size uint32) string {
+	temp := unsafe.String((*byte)(unsafe.Pointer(uintptr(ptr))), size)
+	result := string(temp)
+	free(ptr)
+	return result
+}
+
+func PtrToBytesWithFree(ptr uint32, size uint32) []byte {
+	temp := unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
+	result := make([]byte, size)
+	copy(result, temp)
+	free(ptr)
+	return result
+}
 
 func StringToPtr(s string) (uint32, uint32) {
 	ptr := unsafe.Pointer(unsafe.StringData(s))

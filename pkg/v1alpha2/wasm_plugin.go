@@ -1,4 +1,4 @@
-package pkg
+package v1alpha2
 
 import (
 	"github.com/wesql/sqlparser/go/vt/proto/query"

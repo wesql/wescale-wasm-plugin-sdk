@@ -1,8 +1,8 @@
-package pkg
+package v1alpha2
 
 import (
 	"errors"
-	hostfunction "github.com/wesql/wescale-wasm-plugin-sdk/pkg/host_functions/v1alpha1"
+	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/v1alpha2/host_functions"
 )
 
 //export proxy_on_memory_allocate
@@ -13,29 +13,29 @@ func proxyOnMemoryAllocate(size uint) *byte {
 
 //export RunBeforeExecutionOnGuest
 func RunBeforeExecutionOnGuest(hostInstancePtr, hostModulePtr uint64) {
-	hostfunction.HostInstancePtr = hostInstancePtr
-	hostfunction.HostModulePtr = hostModulePtr
+	host_functions.HostInstancePtr = hostInstancePtr
+	host_functions.HostModulePtr = hostModulePtr
 
 	err := wasmPlugin.RunBeforeExecution()
 	if err != nil {
-		hostfunction.SetErrorMessage(err.Error())
+		host_functions.SetErrorMessage(err.Error())
 	}
 }
 
 //export RunAfterExecutionOnGuest
 func RunAfterExecutionOnGuest() {
-	qr, err := hostfunction.GetQueryResult()
-	if err != nil && !errors.Is(err, hostfunction.StatusToError(hostfunction.StatusBadArgument)) {
+	qr, err := host_functions.GetQueryResult()
+	if err != nil && !errors.Is(err, StatusToError(StatusBadArgument)) {
 		// unknown error
-		hostfunction.SetErrorMessage(err.Error())
+		host_functions.SetErrorMessage(err.Error())
 		return
 	}
 
-	errMessageBefore, err := hostfunction.GetErrorMessage()
+	errMessageBefore, err := host_functions.GetErrorMessage()
 	if err != nil {
-		if !errors.Is(err, hostfunction.StatusToError(hostfunction.StatusBadArgument)) {
+		if !errors.Is(err, StatusToError(StatusBadArgument)) {
 			// unknown error
-			hostfunction.SetErrorMessage(err.Error())
+			host_functions.SetErrorMessage(err.Error())
 			return
 		} else {
 			errMessageBefore = ""
@@ -49,8 +49,8 @@ func RunAfterExecutionOnGuest() {
 
 	finalQueryResult, finalErr := wasmPlugin.RunAfterExecution(qr, errBefore)
 
-	hostfunction.SetQueryResult(finalQueryResult)
+	host_functions.SetQueryResult(finalQueryResult)
 	if finalErr != nil {
-		hostfunction.SetErrorMessage(finalErr.Error())
+		host_functions.SetErrorMessage(finalErr.Error())
 	}
 }

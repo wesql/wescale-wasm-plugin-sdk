@@ -11,10 +11,14 @@ type WasmPlugin interface {
 	RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error)
 }
 
+//export malloc
+func malloc(size uint) *byte
+
+// Deprecated: use malloc instead
+//
 //export proxy_on_memory_allocate
 func proxyOnMemoryAllocate(size uint) *byte {
-	buf := make([]byte, size)
-	return &buf[0]
+	return malloc(size)
 }
 
 //export RunBeforeExecutionOnGuest

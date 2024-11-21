@@ -4,16 +4,18 @@ import (
 	"unsafe"
 )
 
+//export free
+func free(ptr uint32)
+
+// Deprecated: use PtrToStringWithFree instead
 func PtrToString(ptr uint32, size uint32) string {
 	return unsafe.String((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 }
 
+// Deprecated: use PtrToBytesWithFree instead
 func PtrToBytes(ptr uint32, size uint32) []byte {
 	return unsafe.Slice((*byte)(unsafe.Pointer(uintptr(ptr))), size)
 }
-
-//export free
-func free(ptr uint32)
 
 func PtrToStringWithFree(ptr uint32, size uint32) string {
 	temp := unsafe.String((*byte)(unsafe.Pointer(uintptr(ptr))), size)

@@ -18,10 +18,8 @@ func PtrToBytes(ptr uint32, size uint32) []byte {
 }
 
 func PtrToStringWithFree(ptr uint32, size uint32) string {
-	temp := unsafe.String((*byte)(unsafe.Pointer(uintptr(ptr))), size)
-	result := string(temp)
-	free(ptr)
-	return result
+	bytes := PtrToBytesWithFree(ptr, size)
+	return string(bytes)
 }
 
 func PtrToBytesWithFree(ptr uint32, size uint32) []byte {

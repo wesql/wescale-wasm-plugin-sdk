@@ -5,10 +5,10 @@ import (
 )
 
 //export GetQueryOnHost
-func getQueryOnHost(hostInstancePtr uint64, returnValueData *uint32, returnValueSize *uint32) types.Status
+func getQueryOnHost(hostInstanceId uint64, returnValueData *uint32, returnValueSize *uint32) types.Status
 
 //export SetQueryOnHost
-func setQueryOnHost(hostInstancePtr uint64, queryValuePtr uint32, queryValueSize uint32) types.Status
+func setQueryOnHost(hostInstanceId uint64, queryValuePtr uint32, queryValueSize uint32) types.Status
 
 //export GetAbiVersionOnHost
 func getAbiVersionOnHost(returnValuePtr *uint32, returnValueSize *uint32) types.Status

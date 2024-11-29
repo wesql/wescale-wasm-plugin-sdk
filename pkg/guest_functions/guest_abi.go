@@ -2,14 +2,10 @@ package guest_functions
 
 import (
 	"errors"
-	"github.com/wesql/sqlparser/go/vt/proto/query"
 	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/types"
 )
 
-type WasmPlugin interface {
-	RunBeforeExecution() error
-	RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error)
-}
+var CurrentWasmPlugin types.WasmPlugin
 
 //export malloc
 func malloc(size uint) *byte
@@ -22,30 +18,29 @@ func proxyOnMemoryAllocate(size uint) *byte {
 }
 
 //export RunBeforeExecutionOnGuest
-func RunBeforeExecutionOnGuest(hostInstancePtr, hostModulePtr uint64) {
-	types.CurrentWasmPluginContext.HostInstancePtr = hostInstancePtr
-	types.CurrentWasmPluginContext.HostModulePtr = hostModulePtr
-
-	err := types.CurrentWasmPlugin.RunBeforeExecution()
+func RunBeforeExecutionOnGuest(hostInstanceId uint64) {
+	pluginCtx := types.WasmPluginContext{Id: hostInstanceId}
+	err := CurrentWasmPlugin.RunBeforeExecution(pluginCtx)
 	if err != nil {
-		setErrorMessage(err.Error())
+		setErrorMessage(pluginCtx, err.Error())
 	}
 }
 
 //export RunAfterExecutionOnGuest
-func RunAfterExecutionOnGuest() {
-	qr, err := getQueryResult()
+func RunAfterExecutionOnGuest(hostInstanceId uint64) {
+	pluginCtx := types.WasmPluginContext{Id: hostInstanceId}
+	qr, err := getQueryResult(pluginCtx)
 	if err != nil && !errors.Is(err, types.StatusToError(types.StatusBadArgument)) {
 		// unknown error
-		setErrorMessage(err.Error())
+		setErrorMessage(pluginCtx, err.Error())
 		return
 	}
 
-	errMessageBefore, err := getErrorMessage()
+	errMessageBefore, err := getErrorMessage(pluginCtx)
 	if err != nil {
 		if !errors.Is(err, types.StatusToError(types.StatusBadArgument)) {
 			// unknown error
-			setErrorMessage(err.Error())
+			setErrorMessage(pluginCtx, err.Error())
 			return
 		} else {
 			errMessageBefore = ""
@@ -57,12 +52,12 @@ func RunAfterExecutionOnGuest() {
 		errBefore = errors.New(errMessageBefore)
 	}
 
-	finalQueryResult, finalErr := types.CurrentWasmPlugin.RunAfterExecution(qr, errBefore)
+	finalQueryResult, finalErr := CurrentWasmPlugin.RunAfterExecution(pluginCtx, qr, errBefore)
 
-	setQueryResult(finalQueryResult)
+	setQueryResult(pluginCtx, finalQueryResult)
 	if finalErr != nil {
-		setErrorMessage(finalErr.Error())
+		setErrorMessage(pluginCtx, finalErr.Error())
 	} else {
-		setErrorMessage("")
+		setErrorMessage(pluginCtx, "")
 	}
 }

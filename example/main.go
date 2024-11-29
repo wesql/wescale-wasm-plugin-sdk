@@ -6,6 +6,7 @@ import (
 	"github.com/wesql/sqlparser/go/vt/proto/query"
 	"github.com/wesql/wescale-wasm-plugin-sdk/pkg"
 	hostfunction "github.com/wesql/wescale-wasm-plugin-sdk/pkg/host_functions"
+	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/types"
 )
 
 func main() {
@@ -15,14 +16,15 @@ func main() {
 type ParserWasmPlugin struct {
 }
 
-func (a *ParserWasmPlugin) RunBeforeExecution() error {
-	query, err := hostfunction.GetHostQuery()
+func (a *ParserWasmPlugin) RunBeforeExecution(pluginCtx types.WasmPluginContext) error {
+	query, err := hostfunction.GetHostQuery(pluginCtx)
 	if err != nil {
 		return err
 	}
+
 	stmt, err := sqlparser.Parse(query)
 	if err != nil {
-		hostfunction.InfoLog("parse error: " + err.Error())
+		hostfunction.InfoLog(pluginCtx, "parse error: "+err.Error())
 		return nil
 	}
 	switch stmt := stmt.(type) {
@@ -40,7 +42,7 @@ func (a *ParserWasmPlugin) RunBeforeExecution() error {
 	return nil
 }
 
-func (a *ParserWasmPlugin) RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error) {
+func (a *ParserWasmPlugin) RunAfterExecution(pluginCtx types.WasmPluginContext, queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error) {
 	// do nothing
 	return queryResult, errBefore
 }

@@ -5,30 +5,30 @@ import (
 	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/types"
 )
 
-func setErrorMessage(errMessage string) {
+func setErrorMessage(pluginCtx types.WasmPluginContext, errMessage string) {
 	if len(errMessage) == 0 {
 		return
 	}
 	ptr, size := types.StringToPtr(errMessage)
-	_setErrorMessageOnHost(types.CurrentWasmPluginContext.HostInstancePtr, ptr, size)
+	_setErrorMessageOnHost(pluginCtx.Id, ptr, size)
 }
 
-func getErrorMessage() (string, error) {
+func getErrorMessage(pluginCtx types.WasmPluginContext) (string, error) {
 	var ptr uint32
 	var retSize uint32
 
-	err := types.StatusToError(_getErrorMessageOnHost(types.CurrentWasmPluginContext.HostInstancePtr, &ptr, &retSize))
+	err := types.StatusToError(_getErrorMessageOnHost(pluginCtx.Id, &ptr, &retSize))
 	if err != nil {
 		return "", err
 	}
 	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
-func getQueryResult() (*query.QueryResult, error) {
+func getQueryResult(pluginCtx types.WasmPluginContext) (*query.QueryResult, error) {
 	var ptr uint32
 	var retSize uint32
 
-	err := types.StatusToError(_getQueryResultOnHost(types.CurrentWasmPluginContext.HostInstancePtr, &ptr, &retSize))
+	err := types.StatusToError(_getQueryResultOnHost(pluginCtx.Id, &ptr, &retSize))
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +41,7 @@ func getQueryResult() (*query.QueryResult, error) {
 	return queryResult, nil
 }
 
-func setQueryResult(queryResult *query.QueryResult) error {
+func setQueryResult(pluginCtx types.WasmPluginContext, queryResult *query.QueryResult) error {
 	if queryResult == nil {
 		return nil
 	}
@@ -50,5 +50,5 @@ func setQueryResult(queryResult *query.QueryResult) error {
 		return nil
 	}
 	ptr, size := types.BytesToPtr(bytes)
-	return types.StatusToError(_setQueryResultOnHost(types.CurrentWasmPluginContext.HostInstancePtr, ptr, size))
+	return types.StatusToError(_setQueryResultOnHost(pluginCtx.Id, ptr, size))
 }

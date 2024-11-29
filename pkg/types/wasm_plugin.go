@@ -5,8 +5,6 @@ import (
 )
 
 type WasmPlugin interface {
-	RunBeforeExecution() error
-	RunAfterExecution(queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error)
+	RunBeforeExecution(ctx WasmPluginContext) error
+	RunAfterExecution(ctx WasmPluginContext, queryResult *query.QueryResult, errBefore error) (*query.QueryResult, error)
 }
-
-var CurrentWasmPlugin WasmPlugin

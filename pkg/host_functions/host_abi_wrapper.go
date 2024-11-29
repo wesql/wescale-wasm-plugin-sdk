@@ -5,26 +5,26 @@ import (
 	"github.com/wesql/wescale-wasm-plugin-sdk/pkg/types"
 )
 
-func GetHostQuery() (string, error) {
+func GetHostQuery(ctx types.WasmPluginContext) (string, error) {
 	var ptr uint32
 	var retSize uint32
 
-	err := types.StatusToError(getQueryOnHost(types.CurrentWasmPluginContext.HostInstancePtr, &ptr, &retSize))
+	err := types.StatusToError(getQueryOnHost(ctx.Id, &ptr, &retSize))
 	if err != nil {
 		return "", err
 	}
 	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
-func SetHostQuery(query string) error {
+func SetHostQuery(ctx types.WasmPluginContext, query string) error {
 	if len(query) == 0 {
 		return errors.New("query is empty")
 	}
 	ptr, size := types.StringToPtr(query)
-	return types.StatusToError(setQueryOnHost(types.CurrentWasmPluginContext.HostInstancePtr, ptr, size))
+	return types.StatusToError(setQueryOnHost(ctx.Id, ptr, size))
 }
 
-func GetAbiVersion() (string, error) {
+func GetAbiVersion(ctx types.WasmPluginContext) (string, error) {
 	var ptr uint32
 	var retSize uint32
 
@@ -35,7 +35,7 @@ func GetAbiVersion() (string, error) {
 	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
-func GetRuntimeType() (string, error) {
+func GetRuntimeType(ctx types.WasmPluginContext) (string, error) {
 	var ptr uint32
 	var retSize uint32
 
@@ -46,7 +46,7 @@ func GetRuntimeType() (string, error) {
 	return types.PtrToStringWithFree(ptr, retSize), nil
 }
 
-func InfoLog(message string) {
+func InfoLog(ctx types.WasmPluginContext, message string) {
 	if len(message) == 0 {
 		return
 	}
@@ -54,7 +54,7 @@ func InfoLog(message string) {
 	infoLogOnHost(ptr, size)
 }
 
-func ErrorLog(message string) {
+func ErrorLog(ctx types.WasmPluginContext, message string) {
 	if len(message) == 0 {
 		return
 	}
